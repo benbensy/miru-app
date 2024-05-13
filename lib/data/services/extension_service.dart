@@ -44,7 +44,7 @@ class ExtensionService {
     final content = file.readAsStringSync();
 
     // 初始化runtime
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (Platform.isAndroid) {
       runtime = QuickJsRuntime2(stackSize: 1024 * 1024);
     } else if (Platform.isWindows) {
       runtime = QuickJsRuntime2();
