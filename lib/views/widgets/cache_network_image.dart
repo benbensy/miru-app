@@ -73,7 +73,7 @@ class CacheNetWorkImagePic extends StatelessWidget {
               url: url,
               headers: headers,
             );
-            if (Platform.isAndroid) {
+            if (Platform.isAndroid || Platform.isIOS) {
               Get.to(thumnailPage);
               return;
             }
@@ -123,7 +123,7 @@ class _ThumnailPageState extends State<_ThumnailPage> {
         headers: widget.headers,
       ),
     );
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       final result = await ImageGallerySaver.saveImage(
         res.data,
         name: fileName,

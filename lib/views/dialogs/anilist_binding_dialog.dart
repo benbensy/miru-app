@@ -82,7 +82,7 @@ class _AnilistBindingDialogState extends State<AnilistBindingDialog> {
 
   _onSearch(String keyWord) {
     _keyWord = keyWord;
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       _easyRefreshController.callRefresh();
     } else {
       _onRefresh();

@@ -103,7 +103,7 @@ class _AnilistMorePageState extends State<AnilistMorePage> {
                         : item["coverImage"]["large"];
                     return GridItemTile(
                       onTap: () {
-                        if (Platform.isAndroid) {
+                        if (Platform.isAndroid || Platform.isIOS) {
                           Get.to(() => const SearchPage());
                         } else {
                           router.push("/search");
@@ -196,7 +196,7 @@ class _AnilistMorePageState extends State<AnilistMorePage> {
                       : item["coverImage"]["large"];
                   return GridItemTile(
                     onTap: () {
-                      if (Platform.isAndroid) {
+                      if (Platform.isAndroid || Platform.isIOS) {
                         Get.to(() => const SearchPage());
                       } else {
                         router.push("/search");

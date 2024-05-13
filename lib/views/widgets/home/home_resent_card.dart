@@ -272,7 +272,7 @@ class _HomeRecentCardState extends State<HomeRecentCard> {
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: () {
-            if (Platform.isAndroid) {
+            if (Platform.isAndroid || Platform.isIOS) {
               Get.to(
                 DetailPage(
                   url: widget.history.url,

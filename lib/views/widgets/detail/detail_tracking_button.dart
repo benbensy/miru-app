@@ -35,7 +35,7 @@ class _DetailTrackingButtonState extends State<DetailTrackingButton> {
     final anilistType = anlistExtensionMap[c.extension?.type]!;
     if (c.aniListID.value.isEmpty) {
       dynamic data;
-      if (Platform.isAndroid) {
+      if (Platform.isAndroid || Platform.isIOS) {
         data = await Get.to(
           AnilistBindingDialog(
             title: c.detail!.title,
@@ -65,7 +65,7 @@ class _DetailTrackingButtonState extends State<DetailTrackingButton> {
       return;
     }
 
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       showModalBottomSheet(
         context: context,
         showDragHandle: true,

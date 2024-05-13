@@ -125,7 +125,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   'settings.theme-light'.i18n: 'light',
                   'settings.theme-dark'.i18n: 'dark',
                 };
-                if (Platform.isAndroid) {
+                if (Platform.isAndroid || Platform.isIOS) {
                   map['settings.theme-black'.i18n] = 'black';
                 }
                 return map;
@@ -228,6 +228,13 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsRadiosTile(
               title: 'settings.external-player'.i18n,
               itemNameValue: () {
+                if (Platform.isIOS) {
+                  return {
+                    "settings.external-player-builtin".i18n: "built-in",
+                    "VLC": "vlc",
+                    "Other": "other",
+                  };
+                }
                 if (Platform.isAndroid) {
                   return {
                     "settings.external-player-builtin".i18n: "built-in",

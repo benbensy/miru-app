@@ -112,7 +112,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
   _onSearch(String keyWord) {
     _keyWord = keyWord;
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       _easyRefreshController.callRefresh();
     } else {
       _onRefresh();
@@ -130,7 +130,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
       },
     );
 
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       showModalBottomSheet(
         context: context,
         builder: (context) => Column(
