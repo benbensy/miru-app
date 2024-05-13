@@ -47,7 +47,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   List<Widget> _buildContent() {
     return [
-      if (!Platform.isAndroid) ...[
+      if (!Platform.isAndroid && !Platform.isIOS) ...[
         Text(
           'common.settings'.i18n,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -66,7 +66,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsIntpuTile(
               title: 'settings.tmdb-key'.i18n,
               buildSubtitle: () {
-                if (!Platform.isAndroid) {
+                if (!Platform.isAndroid && !Platform.isIOS) {
                   return 'settings.tmdb-key-subtitle'.i18n;
                 }
                 final key =
@@ -174,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsIntpuTile(
               title: 'settings.repo-url'.i18n,
               buildSubtitle: () {
-                if (!Platform.isAndroid) {
+                if (!Platform.isAndroid && !Platform.isIOS) {
                   return 'settings.repo-url-subtitle'.i18n;
                 }
                 return MiruStorage.getSetting(SettingKey.miruRepoUrl);
@@ -270,7 +270,7 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
             const SizedBox(height: 10),
-            if (!Platform.isAndroid) ...[
+            if (!Platform.isAndroid && !Platform.isIOS) ...[
               Text("settings.skip-interval".i18n),
               const SizedBox(height: 2),
               Text(
@@ -410,7 +410,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'Anilist',
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                if (!Platform.isAndroid) {
+                if (!Platform.isAndroid && !Platform.isIOS) {
                   router.push('/settings/anilist');
                 } else {
                   Get.to(() => const AniListTrackingPage());
@@ -434,7 +434,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsIntpuTile(
               title: 'settings.network-ua'.i18n,
               buildSubtitle: () {
-                if (!Platform.isAndroid) {
+                if (!Platform.isAndroid && !Platform.isIOS) {
                   return 'settings.network-ua-subtitle'.i18n;
                 }
                 return MiruStorage.getUASetting();
@@ -531,7 +531,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ),
-      if (!Platform.isAndroid) ...[
+      if (!Platform.isAndroid && !Platform.isIOS) ...[
         const SizedBox(height: 10),
         Obx(
           () {

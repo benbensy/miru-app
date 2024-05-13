@@ -32,7 +32,7 @@ class _InfiniteScrollerState extends State<InfiniteScroller> {
 
   @override
   void initState() {
-    if (!Platform.isAndroid && widget.refreshOnStart) {
+    if (!Platform.isAndroid && !Platform.isIOS && widget.refreshOnStart) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         widget.onRefresh();
       });

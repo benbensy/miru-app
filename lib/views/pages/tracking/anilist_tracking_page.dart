@@ -119,7 +119,7 @@ class _AniListTrackingPageState extends State<AniListTrackingPage> {
     }
 
     return [
-      if (!Platform.isAndroid) ...[
+      if (!Platform.isAndroid && !Platform.isIOS) ...[
         Text(
           'anilist.title'.i18n,
           style: fluent.FluentTheme.of(context).typography.subtitle,
@@ -206,7 +206,7 @@ class _AniListTrackingPageState extends State<AniListTrackingPage> {
                         ],
                       ),
                       const Spacer(),
-                      if (!Platform.isAndroid)
+                      if (!Platform.isAndroid && !Platform.isIOS)
                         PlatformButton(
                           child: Text("common.logout".i18n),
                           onPressed: () {
