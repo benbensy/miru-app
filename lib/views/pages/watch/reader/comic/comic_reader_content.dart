@@ -194,7 +194,7 @@ class _ComicReaderContentState extends State<ComicReaderContent> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: (context) {
+      mobileBuilder: (context) {
         return Scaffold(
             body: SafeArea(
           child: _buildDisplay(

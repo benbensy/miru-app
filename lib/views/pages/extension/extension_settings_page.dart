@@ -448,7 +448,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildAndroid,
       desktopBuilder: _buildDesktop,
     );
   }

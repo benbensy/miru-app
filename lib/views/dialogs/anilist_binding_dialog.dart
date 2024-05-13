@@ -89,7 +89,7 @@ class _AnilistBindingDialogState extends State<AnilistBindingDialog> {
     }
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Scaffold(
       appBar: SearchAppBar(
         title: 'Anilist binding'.i18n,
@@ -227,7 +227,7 @@ class _AnilistBindingDialogState extends State<AnilistBindingDialog> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }

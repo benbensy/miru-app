@@ -205,7 +205,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'settings.bt-server'.i18n,
               buildSubtitle: () => "settings.bt-server-subtitle".i18n,
               trailing: PlatformWidget(
-                androidWidget: TextButton(
+                mobileWidget: TextButton(
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -500,7 +500,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'settings.export-log'.i18n,
               buildSubtitle: () => 'settings.export-log-subtitle'.i18n,
               trailing: PlatformWidget(
-                androidWidget: TextButton(
+                mobileWidget: TextButton(
                   onPressed: () {
                     Share.shareXFiles([XFile(MiruLog.logFilePath)]);
                   },
@@ -552,7 +552,7 @@ class _SettingsPageState extends State<SettingsPage> {
       SettingsTile(
         isCard: true,
         icon: const PlatformWidget(
-          androidWidget: Icon(Icons.update),
+          mobileWidget: Icon(Icons.update),
           desktopWidget: Icon(fluent.FluentIcons.update_restore, size: 24),
         ),
         title: 'settings.upgrade'.i18n,
@@ -564,7 +564,7 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         ),
         trailing: PlatformWidget(
-          androidWidget: TextButton(
+          mobileWidget: TextButton(
             onPressed: () {
               ApplicationUtils.checkUpdate(
                 context,
@@ -670,7 +670,7 @@ class _SettingsPageState extends State<SettingsPage> {
     ];
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('common.settings'.i18n),
@@ -685,7 +685,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: (context) => ListView(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         children: _buildContent(),

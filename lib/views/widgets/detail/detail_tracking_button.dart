@@ -87,7 +87,7 @@ class _DetailTrackingButtonState extends State<DetailTrackingButton> {
     );
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return _buildShow(
       IconButton(
         onPressed: () {
@@ -132,7 +132,7 @@ class _DetailTrackingButtonState extends State<DetailTrackingButton> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDeskltop,
     );
   }

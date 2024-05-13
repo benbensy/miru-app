@@ -188,7 +188,7 @@ class _ThumnailPageState extends State<_ThumnailPage> {
     );
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: GestureDetector(
@@ -256,7 +256,7 @@ class _ThumnailPageState extends State<_ThumnailPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }

@@ -83,7 +83,7 @@ class _TMDBBindingState extends State<TMDBBinding> {
     }
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Scaffold(
       appBar: SearchAppBar(
         title: 'detail.modify-tmdb-binding'.i18n,
@@ -227,7 +227,7 @@ class _TMDBBindingState extends State<TMDBBinding> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }

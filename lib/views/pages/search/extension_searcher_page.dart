@@ -203,7 +203,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
     );
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Scaffold(
       appBar: SearchAppBar(
         title: _runtime.extension.name,
@@ -361,7 +361,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
     );
     if (runtime == null) {
       return PlatformWidget(
-        androidWidget: Scaffold(
+        mobileWidget: Scaffold(
           body: extensionMissing,
         ),
         desktopWidget: Center(
@@ -371,7 +371,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
     }
     _runtime = runtime;
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }

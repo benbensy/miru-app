@@ -24,7 +24,7 @@ class AniListTrackingPage extends StatefulWidget {
 class _AniListTrackingPageState extends State<AniListTrackingPage> {
   final TrackingPageController c = Get.put(TrackingPageController());
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('anilist.title'.i18n),
@@ -236,7 +236,7 @@ class _AniListTrackingPageState extends State<AniListTrackingPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformWidget(
-      androidWidget: _buildAndroid(context),
+      mobileWidget: _buildMobile(context),
       desktopWidget: _buildDesktop(context),
     );
   }

@@ -39,7 +39,7 @@ class _AnilistMorePageState extends State<AnilistMorePage> {
     return data;
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     final List<Tab> tabs = [
       for (final child in anilistStatusMap.keys) Tab(text: child),
     ];
@@ -219,7 +219,7 @@ class _AnilistMorePageState extends State<AnilistMorePage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }
