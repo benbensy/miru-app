@@ -32,24 +32,26 @@ class ExtensionUtils {
     // 创建目录
     Directory(extensionsDir).createSync(recursive: true);
     await _loadExtensions();
-    // 监听目录变化
-    Directory(extensionsDir).watch().listen((event) async {
-      if (path.extension(event.path) == '.js') {
-        final package = path.basenameWithoutExtension(event.path);
-        debugPrint('extension event: ${event.path} ${event.type}');
-        runtimes.remove(package);
-        extensionErrorMap.remove(event.path);
-        switch (event.type) {
-          case FileSystemEvent.delete:
-            break;
-          case FileSystemEvent.create:
-          case FileSystemEvent.modify:
-            await installByPath(event.path);
-            break;
+    if (!Platform.isIOS && !Platform.isMacOS) {
+      // 监听目录变化
+      Directory(extensionsDir).watch().listen((event) async {
+        if (path.extension(event.path) == '.js') {
+          final package = path.basenameWithoutExtension(event.path);
+          debugPrint('extension event: ${event.path} ${event.type}');
+          runtimes.remove(package);
+          extensionErrorMap.remove(event.path);
+          switch (event.type) {
+            case FileSystemEvent.delete:
+              break;
+            case FileSystemEvent.create:
+            case FileSystemEvent.modify:
+              await installByPath(event.path);
+              break;
+          }
+          _reloadPage();
         }
-        _reloadPage();
-      }
-    });
+      });
+    }
   }
 
   static _loadExtensions() async {
@@ -67,6 +69,12 @@ class ExtensionUtils {
     final file = File(path.join(extensionsDir, '$package.js'));
     if (file.existsSync()) {
       file.deleteSync();
+      if (Platform.isIOS || Platform.isMacOS) {
+        final package = path.basenameWithoutExtension(file.path);
+        runtimes.remove(package);
+        extensionErrorMap.remove(file.path);
+        _reloadPage();
+      }
     }
   }
 

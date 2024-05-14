@@ -42,6 +42,9 @@ class _CodeEditPageState extends State<CodeEditPage> {
     final dir = ExtensionUtils.extensionsDir;
     final file = File('$dir/${widget.extension.package}.js');
     await file.writeAsString(controller.text);
+    if (Platform.isIOS || Platform.isMacOS) {
+      ExtensionUtils.installByPath(file.path);
+    }
     // ignore: use_build_context_synchronously
     showPlatformSnackbar(context: context, title: '保存代码', content: '保存成功');
   }
