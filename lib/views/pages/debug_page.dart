@@ -4,11 +4,11 @@ import 'dart:convert';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
-import 'package:flutter_code_editor/flutter_code_editor.dart';
-import 'package:flutter_highlight/themes/monokai-sublime.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/views/widgets/debug/extension_log_tile.dart';
-import 'package:highlight/languages/json.dart';
+import 'package:re_editor/re_editor.dart';
+import 'package:re_highlight/languages/javascript.dart';
+import 'package:re_highlight/styles/atom-one-light.dart';
 
 // 待执行的方法
 final List<Map<String, dynamic>> _methodList = [];
@@ -36,6 +36,7 @@ class ExtensionDebugWindow extends StatefulWidget {
     super.key,
     required this.windowController,
   });
+
   final WindowController windowController;
 
   @override
@@ -52,6 +53,7 @@ class _ExtensionDebugWindowState extends State<ExtensionDebugWindow> {
     "Network",
     "Debug",
   ];
+
   // 当前选中的 tab
   String _currentTab = "Log";
 
@@ -262,6 +264,7 @@ class ConsoleView extends StatefulWidget {
     required this.logs,
     this.onClear,
   });
+
   final List<ExtensionLog> logs;
   final VoidCallback? onClear;
 
@@ -273,6 +276,7 @@ class _ConsoleViewState extends State<ConsoleView> {
   final ScrollController _controller = ScrollController();
 
   List<ExtensionLog> get logs => widget.logs;
+
   // 是否滚动到底部
   bool _isScrollToBottom = true;
 
@@ -366,6 +370,7 @@ class NetworkView extends StatefulWidget {
     required this.logs,
     required this.onClear,
   });
+
   final Map<String, ExtensionNetworkLog> logs;
   final VoidCallback? onClear;
 
@@ -375,6 +380,7 @@ class NetworkView extends StatefulWidget {
 
 class _NetworkViewState extends State<NetworkView> {
   String _selectLogKey = "";
+
   ExtensionNetworkLog? get _selectLog => widget.logs[_selectLogKey];
 
   @override
@@ -528,6 +534,7 @@ class DebugView extends StatefulWidget {
     super.key,
     required this.selectedExtension,
   });
+
   final Extension? selectedExtension;
 
   @override
@@ -547,9 +554,7 @@ class _DebugViewState extends State<DebugView> {
 
   final _controller = TextEditingController();
 
-  final _resultController = CodeController(
-    language: json,
-  );
+  final _resultController = CodeLineEditingController();
 
   // 是否等待接收数据
   bool _isLoading = false;
@@ -644,18 +649,34 @@ class _DebugViewState extends State<DebugView> {
                     debugShowCheckedModeBanner: false,
                     home: material.Scaffold(
                       backgroundColor: Colors.transparent,
-                      body: CodeTheme(
-                        data: CodeThemeData(
-                          styles: monokaiSublimeTheme,
+                      body: CodeEditor(
+                        style: CodeEditorStyle(
+                          codeTheme: CodeHighlightTheme(languages: {
+                            'javascript':
+                                CodeHighlightThemeMode(mode: langJavascript)
+                          }, theme: atomOneLightTheme),
                         ),
-                        child: SingleChildScrollView(
-                          child: CodeField(
-                            controller: _resultController,
-                            textStyle: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
+                        controller: _resultController,
+                        wordWrap: false,
+                        indicatorBuilder: (context, editingController,
+                            chunkController, notifier) {
+                          return Row(
+                            children: [
+                              DefaultCodeLineNumber(
+                                controller: editingController,
+                                notifier: notifier,
+                              ),
+                              DefaultCodeChunkIndicator(
+                                width: 20,
+                                controller: chunkController,
+                                notifier: notifier,
+                              )
+                            ],
+                          );
+                        },
+                        //findBuilder: (context, controller, readOnly) => CodeFindPanelView(controller: controller, readOnly: readOnly),
+                        //toolbarController: const ContextMenuControllerImpl(),
+                        sperator: Container(width: 1, color: Colors.blue),
                       ),
                     ),
                   ),
