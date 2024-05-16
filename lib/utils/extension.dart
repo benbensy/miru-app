@@ -5,8 +5,9 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:miru_app/controllers/extension/extension_browse_controller.dart';
 import 'package:miru_app/models/extension.dart';
-import 'package:miru_app/controllers/extension/extension_controller.dart';
+import 'package:miru_app/controllers/extension/extension_page_controller.dart';
 import 'package:miru_app/controllers/search_controller.dart';
 import 'package:miru_app/controllers/settings_controller.dart';
 import 'package:miru_app/data/services/extension_service.dart';
@@ -158,7 +159,7 @@ class ExtensionUtils {
   static _reloadPage() {
     // 重载扩展页面
     if (Get.isRegistered<ExtensionPageController>()) {
-      Get.find<ExtensionPageController>().callRefresh();
+      Get.find<ExtensionBrowseController>().callRefresh();
     }
     // 重载搜索页面
     if (Get.isRegistered<SearchPageController>()) {

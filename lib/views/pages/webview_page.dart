@@ -7,10 +7,11 @@ import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 class WebViewPage extends StatefulWidget {
   const WebViewPage({
     super.key,
-    required this.extensionRuntime,
+    this.extensionRuntime,
     required this.url,
   });
-  final ExtensionService extensionRuntime;
+
+  final ExtensionService? extensionRuntime;
   final String url;
 
   @override
@@ -18,9 +19,9 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
-  late String url = widget.extensionRuntime.extension.webSite + widget.url;
-  final cookieManager = WebviewCookieManager();
+  String url = "";
   late Uri loadUrl = Uri.parse(url);
+  final cookieManager = WebviewCookieManager();
 
   _setCookie() async {
     if (loadUrl.host != Uri.parse(url).host) {
@@ -30,9 +31,19 @@ class _WebViewPageState extends State<WebViewPage> {
     final cookieString =
         cookies.map((e) => '${e.name}=${e.value}').toList().join(';');
     debugPrint('$url $cookieString');
-    widget.extensionRuntime.setCookie(
+    widget.extensionRuntime?.setCookie(
       cookieString,
     );
+  }
+
+  @override
+  void initState() {
+    if (widget.extensionRuntime == null) {
+      url = widget.url;
+    } else {
+      url = widget.extensionRuntime!.extension.webSite + widget.url;
+    }
+    super.initState();
   }
 
   @override
@@ -45,7 +56,7 @@ class _WebViewPageState extends State<WebViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(loadUrl.toString()),
+        title: Text(url.toString()),
       ),
       body: InAppWebView(
         initialUrlRequest: URLRequest(

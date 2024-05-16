@@ -12,6 +12,7 @@ import 'package:miru_app/utils/application.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/layout.dart';
 import 'package:miru_app/utils/miru_storage.dart';
+import 'package:miru_app/views/pages/update/update_page.dart';
 import 'package:window_manager/window_manager.dart';
 
 class DesktopMainPage extends StatefulWidget {
@@ -188,7 +189,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
 
   final pages = const [
     HomePage(),
-    SearchPage(),
+    UpdatePage(),
     ExtensionPage(),
     SettingsPage(),
   ];
@@ -206,7 +207,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
   Widget build(BuildContext context) {
     List<_Destination> destinations = <_Destination>[
       _Destination(Icons.home_outlined, Icons.home, 'common.home'.i18n),
-      _Destination(Icons.search_outlined, Icons.search, 'common.search'.i18n),
+      _Destination(Icons.update, Icons.update, 'common.update'.i18n),
       _Destination(
           Icons.extension_outlined, Icons.extension, 'common.extension'.i18n),
       _Destination(
@@ -245,7 +246,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
                         ))
                     .toList(),
                 labelBehavior:
-                    NavigationDestinationLabelBehavior.onlyShowSelected,
+                    NavigationDestinationLabelBehavior.alwaysShow,
                 selectedIndex: c.selectedTab.value,
                 onDestinationSelected: c.changeTab,
               ),

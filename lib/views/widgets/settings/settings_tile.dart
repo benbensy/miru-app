@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 
 class SettingsTile extends StatefulWidget {
@@ -12,6 +13,7 @@ class SettingsTile extends StatefulWidget {
     this.onTap,
     this.isCard = false,
   });
+
   final Widget? icon;
   final String title;
   final String Function()? buildSubtitle;
@@ -33,6 +35,7 @@ class _SettingsTileState extends State<SettingsTile> {
           : null,
       trailing: widget.trailing,
       onTap: widget.onTap,
+      contentPadding: const EdgeInsets.only(left: 16),
     );
   }
 

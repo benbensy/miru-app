@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:miru_app/models/extension_setting.dart';
 import 'package:miru_app/views/pages/code_edit_page.dart';
 import 'package:miru_app/controllers/extension/extension_settings_controller.dart';
+import 'package:miru_app/views/pages/webview_page.dart';
 import 'package:miru_app/views/widgets/extension/info_card.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/data/services/database_service.dart';
@@ -28,6 +29,7 @@ class ExtensionSettingsPage extends StatefulWidget {
     super.key,
     required this.package,
   });
+
   final String package;
 
   @override
@@ -143,8 +145,8 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
             const SizedBox(height: 30),
             Center(
               child: Container(
-                height: 100,
-                width: 100,
+                height: 60,
+                width: 60,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -164,7 +166,25 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
               extension.package,
               style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 8),
+            InkResponse(
+              child: Text(
+                extension.webSite,
+                style: const TextStyle(
+                  fontSize: 14,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+              onTap: () {
+                Get.to(
+                  WebViewPage(
+                    //extensionRuntime: c.runtime.value!,
+                    url: extension.webSite,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Wrap(
@@ -188,11 +208,6 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
                     icon: Icons.description,
                     title: 'extension-info.license'.i18n,
                     content: extension.license,
-                  ),
-                  InfoCard(
-                    icon: Icons.link,
-                    title: 'extension-info.original-site'.i18n,
-                    content: extension.webSite,
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
@@ -15,6 +16,7 @@ class SettingsIntpuTile extends fluent.StatefulWidget {
     this.trailing = const Icon(Icons.chevron_right),
     this.isCard = false,
   });
+
   final Widget? icon;
   final String title;
   final String Function() buildSubtitle;
@@ -48,6 +50,7 @@ class _SettingsIntpuTileState extends fluent.State<SettingsIntpuTile> {
       title: Text(widget.title),
       subtitle: Text(widget.buildSubtitle()),
       trailing: widget.trailing,
+      contentPadding: const EdgeInsets.only(left: 16, right: 16),
       onTap: () {
         showDialog(
           context: context,
