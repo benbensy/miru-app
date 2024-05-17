@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -112,17 +113,20 @@ class _MainAppState extends State<MainApp> {
   }
 
   Widget _buildMobileMain(BuildContext context) {
-    return GetMaterialApp(
-      title: "Miru",
-      debugShowCheckedModeBanner: false,
-      themeMode: c.theme,
-      theme: c.currentThemeData,
-      darkTheme: ThemeData.dark(useMaterial3: true),
-      home: const AndroidMainPage(),
-      localizationsDelegates: [
-        I18nUtils.flutterI18nDelegate,
-      ],
-    );
+    return DynamicColorBuilder(
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      return GetMaterialApp(
+        title: "Miru",
+        debugShowCheckedModeBanner: false,
+        themeMode: c.theme,
+        theme: c.lightTheme(lightDynamic),
+        darkTheme: c.darkTheme(darkDynamic),
+        home: const AndroidMainPage(),
+        localizationsDelegates: [
+          I18nUtils.flutterI18nDelegate,
+        ],
+      );
+    });
   }
 
   Widget _buildDesktopMain(BuildContext context) {

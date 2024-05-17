@@ -7,7 +7,13 @@ class ExtensionPageController extends GetxController {
   final PageController pageController = PageController();
 
   final List<Widget> pages = [
-    const ExtensionBrowsePage(),
     const SearchPage(),
+    const ExtensionBrowsePage(),
   ];
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
 }

@@ -35,7 +35,7 @@ class _SettingsTileState extends State<SettingsTile> {
           : null,
       trailing: widget.trailing,
       onTap: widget.onTap,
-      contentPadding: const EdgeInsets.only(left: 16),
+      contentPadding: const EdgeInsets.only(left: 16, right: 16),
     );
   }
 

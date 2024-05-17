@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:miru_app/base/widget/get_binding_widget.dart';
 import 'package:miru_app/controllers/extension/extension_browse_controller.dart';
 import 'package:miru_app/controllers/extension/extension_page_controller.dart';
+import 'package:miru_app/utils/i18n.dart';
 
 class ExtensionPage extends GetBindingWidget<ExtensionPageController> {
   const ExtensionPage({super.key});
@@ -22,9 +23,9 @@ class ExtensionPage extends GetBindingWidget<ExtensionPageController> {
         length: 2,
         child: Scaffold(
           appBar: TabBar(
-            tabs: const [
-              Tab(text: 'search'),
-              Tab(text: 'extension-type'),
+            tabs: [
+              Tab(text: 'common.browse'.i18n),
+              Tab(text: 'extension.extension-manager'.i18n),
             ],
             onTap: (value) {
               controller.pageController.jumpToPage(value);

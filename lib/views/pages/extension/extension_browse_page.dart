@@ -187,7 +187,7 @@ class ExtensionBrowsePage extends GetCommonWidget<ExtensionBrowseController> {
     return Obx(() {
       return Scaffold(
         appBar: AppBar(
-          title: Text('common.extension'.i18n),
+          //title: Text('common.extension'.i18n),
           actions: [
             if (controller.errors.isNotEmpty)
               IconButton(

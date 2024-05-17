@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_multi_window
+  dynamic_color
   flutter_js
   flutter_windows_webview
   isar_flutter_libs

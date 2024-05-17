@@ -13,6 +13,7 @@ import 'package:miru_app/utils/request.dart';
 import 'package:miru_app/views/dialogs/bt_dialog.dart';
 import 'package:miru_app/controllers/extension/extension_repo_controller.dart';
 import 'package:miru_app/controllers/settings_controller.dart';
+import 'package:miru_app/views/pages/settings/settings_accent_color_widget.dart';
 import 'package:miru_app/views/pages/tracking/anilist_tracking_page.dart';
 import 'package:miru_app/views/widgets/settings/settings_expander_tile.dart';
 import 'package:miru_app/views/widgets/settings/settings_input_tile.dart';
@@ -62,52 +63,16 @@ class _SettingsPageState extends State<SettingsPage> {
         subTitle: 'settings.general-subtitle'.i18n,
         content: Column(
           children: [
-            // TMDB KEY 设置
-            SettingsIntpuTile(
-              title: 'settings.tmdb-key'.i18n,
-              buildSubtitle: () {
-                if (!Platform.isAndroid && !Platform.isIOS) {
-                  return 'settings.tmdb-key-subtitle'.i18n;
-                }
-                final key =
-                    MiruStorage.getSetting(SettingKey.tmdbKey) as String;
-                if (key.isEmpty) {
-                  return 'common.unset'.i18n;
-                }
-                // 替换为*号
-                return key.replaceAll(RegExp(r"."), '*');
-              },
-              onChanged: (value) {
-                MiruStorage.setSetting(SettingKey.tmdbKey, value);
-                TmdbApi.tmdb = TMDB(
-                  ApiKeys(value, ''),
-                  defaultLanguage: MiruStorage.getSetting(SettingKey.language),
-                );
-              },
-              buildText: () {
-                return MiruStorage.getSetting(SettingKey.tmdbKey);
-              },
-            ),
             // 语言设置
             SettingsRadiosTile(
               title: 'settings.language'.i18n,
-              itemNameValue: {
-                'languages.be'.i18n: 'be',
-                'languages.en'.i18n: 'en',
-                'languages.es'.i18n: 'es',
-                'languages.fr'.i18n: 'fr',
-                'languages.hu'.i18n: 'hu',
-                'languages.hi'.i18n: 'hi',
-                'languages.id'.i18n: 'id',
-                'languages.ja'.i18n: 'ja',
-                'languages.pl'.i18n: 'pl',
-                'languages.ru'.i18n: 'ru',
-                'languages.ryu'.i18n: 'ryu',
-                'languages.uk'.i18n: 'uk',
-                'languages.zh'.i18n: 'zh',
-                'languages.zhHant'.i18n: 'zhHant',
+              itemNameValue: c.lang,
+              buildSubtitle: () {
+                var saveLang = MiruStorage.getSetting(SettingKey.language);
+                var find = c.lang.entries
+                    .firstWhere((element) => element.value == saveLang);
+                return find.key;
               },
-              buildSubtitle: () => 'settings.language-subtitle'.i18n,
               applyValue: (value) {
                 MiruStorage.setSetting(SettingKey.language, value);
                 I18nUtils.changeLanguage(value);
@@ -125,17 +90,46 @@ class _SettingsPageState extends State<SettingsPage> {
                   'settings.theme-light'.i18n: 'light',
                   'settings.theme-dark'.i18n: 'dark',
                 };
-                if (Platform.isAndroid || Platform.isIOS) {
-                  map['settings.theme-black'.i18n] = 'black';
-                }
                 return map;
               }(),
-              buildSubtitle: () => 'settings.theme-subtitle'.i18n,
+              buildSubtitle: () {
+                var theme = MiruStorage.getSetting(SettingKey.theme);
+                switch (theme) {
+                  case "light":
+                    return 'settings.theme-light'.i18n;
+                  case "black":
+                  case "dark":
+                    return 'settings.theme-dark'.i18n;
+                  default:
+                    return 'settings.theme-system'.i18n;
+                }
+              },
               applyValue: (value) {
                 Get.find<ApplicationController>().changeTheme(value);
               },
               buildGroupValue: () {
-                return Get.find<ApplicationController>().themeText.value;
+                var theme = Get.find<ApplicationController>().themeText;
+                if (theme == "dark" || theme == "black") {
+                  return "dark";
+                } else {
+                  return "light";
+                }
+              },
+            ),
+            const SettingsAccentColorWidget(),
+            SettingsSwitchTile(
+              title: 'settings.pure-black-mode'.i18n,
+              buildSubtitle: () => 'settings.pure-black-mode-subtitle'.i18n,
+              buildValue: () {
+                var theme = MiruStorage.getSetting(SettingKey.theme);
+                return theme == "black";
+              },
+              onChanged: (value) {
+                if (value) {
+                  Get.find<ApplicationController>().changeTheme("black");
+                } else {
+                  Get.find<ApplicationController>().changeTheme("dark");
+                }
               },
             ),
             // 启动检查更新
@@ -228,40 +222,21 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsRadiosTile(
               title: 'settings.external-player'.i18n,
               itemNameValue: () {
-                if (Platform.isIOS) {
-                  return {
-                    "settings.external-player-builtin".i18n: "built-in",
-                    "VLC": "vlc",
-                    "Other": "other",
-                  };
-                }
-                if (Platform.isAndroid) {
-                  return {
-                    "settings.external-player-builtin".i18n: "built-in",
-                    "VLC": "vlc",
-                    "Other": "other",
-                  };
-                }
-                if (Platform.isLinux) {
-                  return {
-                    "settings.external-player-builtin".i18n: "built-in",
-                    "VLC": "vlc",
-                    "mpv": "mpv",
-                  };
-                }
-                return {
-                  "settings.external-player-builtin".i18n: "built-in",
-                  "VLC": "vlc",
-                  "PotPlayer": "potplayer",
-                };
+                return c.getPlayer();
               }(),
-              buildSubtitle: () => FlutterI18n.translate(
-                context,
-                'settings.external-player-subtitle',
-                translationParams: {
-                  'player': MiruStorage.getSetting(SettingKey.videoPlayer),
-                },
-              ),
+              buildSubtitle: () {
+                var player = c.getPlayer();
+                var save = MiruStorage.getSetting(SettingKey.videoPlayer);
+                var find = player.entries
+                    .firstWhere((element) => element.value == save);
+                return FlutterI18n.translate(
+                  context,
+                  'settings.external-player-subtitle',
+                  translationParams: {
+                    'player': find.key,
+                  },
+                );
+              },
               applyValue: (value) {
                 MiruStorage.setSetting(SettingKey.videoPlayer, value);
               },
@@ -358,15 +333,14 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsRadiosTile(
               title: 'settings.default-reader-mode'.i18n,
               itemNameValue: () {
-                final map = {
-                  'comic-settings.standard'.i18n: 'standard',
-                  'comic-settings.right-to-left'.i18n: 'rightToLeft',
-                  'comic-settings.web-tonn'.i18n: 'webTonn',
-                };
-                return map;
+                return c.comic;
               }(),
-              buildSubtitle: () =>
-                  '${MiruStorage.getSetting(SettingKey.readingMode)}'.i18n,
+              buildSubtitle: () {
+                var mode = MiruStorage.getSetting(SettingKey.readingMode);
+                var find = c.comic.entries
+                    .firstWhere((element) => element.value == mode);
+                return find.key;
+              },
               applyValue: (value) {
                 MiruStorage.setSetting(SettingKey.readingMode, value);
               },
@@ -384,6 +358,32 @@ class _SettingsPageState extends State<SettingsPage> {
         androidIcon: Icons.sync,
         content: Column(
           children: [
+            // TMDB KEY 设置
+            SettingsIntpuTile(
+              title: 'settings.tmdb-key'.i18n,
+              buildSubtitle: () {
+                if (!Platform.isAndroid && !Platform.isIOS) {
+                  return 'settings.tmdb-key-subtitle'.i18n;
+                }
+                final key =
+                MiruStorage.getSetting(SettingKey.tmdbKey) as String;
+                if (key.isEmpty) {
+                  return 'common.unset'.i18n;
+                }
+                // 替换为*号
+                return key.replaceAll(RegExp(r"."), '*');
+              },
+              onChanged: (value) {
+                MiruStorage.setSetting(SettingKey.tmdbKey, value);
+                TmdbApi.tmdb = TMDB(
+                  ApiKeys(value, ''),
+                  defaultLanguage: MiruStorage.getSetting(SettingKey.language),
+                );
+              },
+              buildText: () {
+                return MiruStorage.getSetting(SettingKey.tmdbKey);
+              },
+            ),
             SettingsSwitchTile(
               title: 'settings.auto-tracking'.i18n,
               buildSubtitle: () => 'settings.auto-tracking-subtitle'.i18n,
@@ -448,13 +448,14 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             SettingsRadiosTile(
               title: 'settings.proxy-type'.i18n,
-              itemNameValue: {
-                'settings.proxy-type-direct'.i18n: 'DIRECT',
-                'settings.proxy-type-socks5'.i18n: 'SOCKS5',
-                'settings.proxy-type-socks4'.i18n: 'SOCKS4',
-                'settings.proxy-type-http'.i18n: 'PROXY',
+              itemNameValue: c.net,
+              buildSubtitle: () {
+                var save = MiruStorage.getSetting(SettingKey.proxyType);
+                var find = c.net.entries
+                    .firstWhere((element) => element.value == save);
+                return find.key;
+                //'settings.proxy-type-subtitle'.i18n
               },
-              buildSubtitle: () => 'settings.proxy-type-subtitle'.i18n,
               applyValue: (value) {
                 MiruStorage.setSetting(SettingKey.proxyType, value);
                 MiruRequest.refreshProxy();
@@ -466,7 +467,14 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 10),
             SettingsIntpuTile(
               title: 'settings.proxy'.i18n,
-              buildSubtitle: () => 'settings.proxy-subtitle'.i18n,
+              buildSubtitle: () {
+                var save = MiruStorage.getSetting(SettingKey.proxy);
+                if (save == '') {
+                  return 'settings.proxy-subtitle'.i18n;
+                } else {
+                  return save;
+                }
+              },
               onChanged: (value) {
                 MiruStorage.setSetting(SettingKey.proxy, value);
                 MiruRequest.refreshProxy();

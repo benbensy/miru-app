@@ -34,7 +34,9 @@
     "off": "关闭",
     "error-message": "错误信息",
     "disconnect": "断开连接",
-    "update": "更新"
+    "update": "更新",
+    "download": "下载",
+    "browse": "浏览"
   },
   "home": {
     "continue-watching": "继续观看",
@@ -58,7 +60,8 @@
     },
     "error-dialog": "错误信息",
     "installed": "已安装",
-    "edit-code": "编辑代码"
+    "edit-code": "编辑代码",
+    "extension-manager": "扩展管理"
   },
   "extension-repo": {
     "error": "发生错误了!",
@@ -68,7 +71,7 @@
   },
   "settings": {
     "general": "常规",
-    "general-subtitle": "TMDB、语言、主题、检查更新...",
+    "general-subtitle": "语言、主题、检查更新...",
     "extension": "扩展",
     "extension-subtitle": "扩展仓库",
     "video-player": "视频播放器",
@@ -76,7 +79,7 @@
     "comic-reader": "漫画阅读器",
     "comic-reader-subtitle": "默认阅读模式...",
     "tracking": "追踪",
-    "tracking-subtitle": "AniList...",
+    "tracking-subtitle": "TMDb, AniList...",
     "auto-tracking": "自动追踪观看/阅读进度",
     "auto-tracking-subtitle": "结束观看/阅读后自动更新进度",
     "about": "关于",
@@ -104,7 +107,7 @@
     "nsfw": "NSFW",
     "nsfw-subtitle": "显示 NSFW 内容",
     "external-player": "优先使用的视频播放器",
-    "external-player-subtitle": "当前优先使用的是 {player}",
+    "external-player-subtitle": "当前优先使用的是: {player}",
     "external-player-builtin": "内置播放器",
     "language-subtitle": "选择软件的语言",
     "extension-log": "扩展日志窗口",
@@ -128,7 +131,9 @@
     "save-log-subtitle": "自动保存日志文件",
     "export-log": "导出日志",
     "export-log-subtitle": "导出日志文件到本地",
-    "advanced": "高级"
+    "advanced": "高级",
+    "pure-black-mode": "纯黑模式",
+    "pure-black-mode-subtitle": "纯黑暗色主题"
   },
   "external-player-launching": "正在启动 {player}",
   "detail": {

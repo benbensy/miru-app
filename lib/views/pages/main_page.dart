@@ -1,7 +1,9 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miru_app/views/pages/download/download_page.dart';
 import 'package:miru_app/views/pages/extension/extension_page.dart';
 import 'package:miru_app/views/pages/home_page.dart';
 import 'package:miru_app/controllers/main_controller.dart';
@@ -191,6 +193,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
     HomePage(),
     UpdatePage(),
     ExtensionPage(),
+    DownloadPage(),
     SettingsPage(),
   ];
 
@@ -207,9 +210,12 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
   Widget build(BuildContext context) {
     List<_Destination> destinations = <_Destination>[
       _Destination(Icons.home_outlined, Icons.home, 'common.home'.i18n),
-      _Destination(Icons.update, Icons.update, 'common.update'.i18n),
+      _Destination(Icons.new_releases_outlined, Icons.new_releases,
+          'common.update'.i18n),
       _Destination(
           Icons.extension_outlined, Icons.extension, 'common.extension'.i18n),
+      _Destination(
+          Icons.download_outlined, Icons.download, 'common.download'.i18n),
       _Destination(
           Icons.settings_outlined, Icons.settings, 'common.settings'.i18n),
     ];
@@ -245,8 +251,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
                           label: e.label,
                         ))
                     .toList(),
-                labelBehavior:
-                    NavigationDestinationLabelBehavior.alwaysShow,
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                 selectedIndex: c.selectedTab.value,
                 onDestinationSelected: c.changeTab,
               ),
@@ -257,6 +262,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
 
 class _Destination {
   const _Destination(this.icon, this.selectedIcon, this.label);
+
   final IconData selectedIcon;
   final IconData icon;
   final String label;
