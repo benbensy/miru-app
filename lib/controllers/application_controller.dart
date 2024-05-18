@@ -14,28 +14,45 @@ class ApplicationController extends GetxController {
   }
 
   ThemeData lightTheme(ColorScheme? lightColorScheme) {
-    var themeAccent = MiruStorage.getSetting(SettingKey.themeAccent);
-    final scheme =
-        lightColorScheme ?? ColorScheme.fromSeed(seedColor: Color(themeAccent));
     if (themeText == "black") {
       return blackTheme();
     } else {
-      return ThemeData(
-        colorScheme: scheme,
-      );
+      var enableDyColor = MiruStorage.getSetting(SettingKey.dynamicColor);
+      var themeAccent = MiruStorage.getSetting(SettingKey.themeAccent);
+      final scheme = lightColorScheme ??
+          ColorScheme.fromSeed(seedColor: Color(themeAccent));
+      if (enableDyColor) {
+        return ThemeData(
+          colorScheme: scheme,
+        );
+      } else {
+        return ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Color(themeAccent)),
+        );
+      }
     }
   }
 
   ThemeData darkTheme(ColorScheme? darkColorScheme) {
     var themeAccent = MiruStorage.getSetting(SettingKey.themeAccent);
+    var enableDyColor = MiruStorage.getSetting(SettingKey.dynamicColor);
     final scheme = darkColorScheme ??
         ColorScheme.fromSeed(
           seedColor: Color(themeAccent),
           brightness: Brightness.dark,
         );
-    return ThemeData(
-      colorScheme: scheme,
-    );
+    if (enableDyColor) {
+      return ThemeData(
+        colorScheme: scheme,
+      );
+    } else {
+      return ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color(themeAccent),
+          brightness: Brightness.dark,
+        ),
+      );
+    }
   }
 
   ThemeData blackTheme() {

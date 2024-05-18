@@ -81,4 +81,5 @@ flutter:
     - assets/i18n/
     - assets/icon/logo.png
     - assets/icon/anilist.jpg
+    - assets/icon/dy_md.png
     - assets/js/

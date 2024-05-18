@@ -11,6 +11,8 @@ import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/miru_storage.dart';
 import 'package:miru_app/utils/request.dart';
 
+import 'application_controller.dart';
+
 class SettingsController extends GetxController {
   final contributors = [].obs;
   final extensionLogWindowId = (-1).obs;
@@ -54,6 +56,7 @@ class SettingsController extends GetxController {
   };
 
   final colors = [
+    0xFFD32F2F,
     0xFFD32F2F,
     0xFFC2185B,
     0xFF7B1FA2,
@@ -112,6 +115,19 @@ class SettingsController extends GetxController {
       "VLC": "vlc",
       "PotPlayer": "potplayer",
     };
+  }
+
+  void changeAccent(int index) {
+    if (Platform.isAndroid && index == 0) {
+      MiruStorage.setSetting(SettingKey.dynamicColor, true);
+    } else {
+      MiruStorage.setSetting(SettingKey.dynamicColor, false);
+      var offset = Platform.isAndroid ? 1 : 0;
+      MiruStorage.setSetting(SettingKey.themeAccent, colors[index - offset]);
+    }
+    selectThemeColorIndex.value = index;
+    var appController = Get.find<ApplicationController>();
+    appController.changeTheme(appController.themeText);
   }
 
   void toggleExtensionLogWindow(bool open) async {
