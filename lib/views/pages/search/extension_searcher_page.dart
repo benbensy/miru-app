@@ -18,7 +18,7 @@ import 'package:miru_app/views/widgets/messenger.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 import 'package:miru_app/views/widgets/search_appbar.dart';
 
-class ExtensionSearcherPage extends fluent.StatefulWidget {
+class ExtensionSearcherPage extends StatefulWidget {
   const ExtensionSearcherPage({
     super.key,
     required this.package,

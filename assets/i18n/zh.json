@@ -23,7 +23,7 @@
     "retry": "重试",
     "next": "下一个",
     "previous": "上一个",
-    "show-all": "显示全部",
+    "show-all": "全部",
     "delete": "删除",
     "delete-all": "删除全部",
     "save": "保存",
@@ -56,7 +56,8 @@
       "url-label": "扩展地址",
       "tips": "你可以通过链接导入扩展，或者点击下方的扩展目录，将扩展文件放入其中。",
       "extension-dir": "扩展目录",
-      "import-by-url": "通过链接导入"
+      "import-by-url": "通过链接导入",
+      "import-by-local": "本地导入"
     },
     "error-dialog": "错误信息",
     "installed": "已安装",

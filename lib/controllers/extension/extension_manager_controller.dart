@@ -1,16 +1,35 @@
 import 'package:get/get.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/utils/extension.dart';
+import 'package:miru_app/data/services/extension_service.dart';
 
-class ExtensionBrowseController extends GetxController {
+class ExtensionManagerController extends GetxController {
   List<ExtensionService> runtimes = <ExtensionService>[].obs;
+  RxMap<String, String> errors = <String, String>{}.obs;
+  RxBool isInstallLoading = false.obs;
+  bool needRefresh = true;
+  bool isPageOpen = false;
   ExtensionType? lastType;
 
   @override
   void onInit() {
     onRefresh();
     super.onInit();
+  }
+
+  @override
+  void onReady() {
+    isPageOpen = true;
+    if (needRefresh) {
+      onRefresh();
+    }
+    super.onReady();
+  }
+
+  @override
+  void dispose() {
+    isPageOpen = false;
+    super.dispose();
   }
 
   filterExtension(ExtensionType? type) {
@@ -31,6 +50,16 @@ class ExtensionBrowseController extends GetxController {
 
   onRefresh() async {
     runtimes.clear();
+    errors.clear();
     runtimes.addAll(ExtensionUtils.runtimes.values);
+    errors.addAll(ExtensionUtils.extensionErrorMap);
+  }
+
+  callRefresh() {
+    if (isPageOpen) {
+      onRefresh();
+    } else {
+      needRefresh = true;
+    }
   }
 }

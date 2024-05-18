@@ -116,7 +116,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 }
               },
             ),
-            const SettingsAccentColorWidget(),
+            if (Platform.isAndroid || Platform.isIOS)
+              const SettingsAccentColorWidget(),
             SettingsSwitchTile(
               title: 'settings.pure-black-mode'.i18n,
               buildSubtitle: () => 'settings.pure-black-mode-subtitle'.i18n,
@@ -366,7 +367,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   return 'settings.tmdb-key-subtitle'.i18n;
                 }
                 final key =
-                MiruStorage.getSetting(SettingKey.tmdbKey) as String;
+                    MiruStorage.getSetting(SettingKey.tmdbKey) as String;
                 if (key.isEmpty) {
                   return 'common.unset'.i18n;
                 }

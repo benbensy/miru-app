@@ -1,26 +1,28 @@
+import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/base/widget/get_binding_widget.dart';
-import 'package:miru_app/controllers/extension/extension_browse_controller.dart';
+import 'package:miru_app/controllers/extension/extension_manager_controller.dart';
+import 'package:miru_app/views/dialogs/extension_dialogs.dart';
+import 'package:miru_app/views/dialogs/filter_extension_dialog.dart';
+import 'package:miru_app/views/widgets/extension/extension_tile.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/i18n.dart';
-import 'package:miru_app/views/dialogs/filter_extension_dialog.dart';
-import 'package:miru_app/views/widgets/extension/extension_browse_title.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
-import 'package:fluent_ui/fluent_ui.dart' as fluent;
 
-class ExtensionBrowsePage extends GetBindingWidget<ExtensionBrowseController> {
-  const ExtensionBrowsePage({super.key});
+class ExtensionManagerPage
+    extends GetBindingWidget<ExtensionManagerController> {
+  const ExtensionManagerPage({super.key});
 
   @override
   Bindings? binding() {
     return BindingsBuilder(() {
-      Get.lazyPut(() => ExtensionBrowseController());
+      Get.lazyPut(() => ExtensionManagerController());
     });
   }
 
   @override
-  Widget build(BuildContext context) {
+  fluent.Widget build(BuildContext context) {
     return PlatformBuildWidget(
       mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
@@ -54,7 +56,7 @@ class ExtensionBrowsePage extends GetBindingWidget<ExtensionBrowseController> {
                   ],
                 ),
               ),
-            for (final ext in controller.runtimes) ExtensionBrowseTile(ext.extension),
+            for (final ext in controller.runtimes) ExtensionTile(ext.extension),
           ],
         ),
       );
@@ -77,6 +79,22 @@ class ExtensionBrowsePage extends GetBindingWidget<ExtensionBrowseController> {
                   ),
                 ),
                 const Spacer(),
+                // 错误按钮
+                if (controller.errors.isNotEmpty)
+                  fluent.IconButton(
+                    icon: const Icon(fluent.FluentIcons.error),
+                    onPressed: () {
+                      ExtensionDialogs.loadErrorDialog(
+                          context, controller.errors);
+                    },
+                  ),
+                // 导入按钮
+                fluent.IconButton(
+                  icon: const Icon(fluent.FluentIcons.add_space_before),
+                  onPressed: () {
+                    ExtensionDialogs.importDialog(context);
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -104,7 +122,7 @@ class ExtensionBrowsePage extends GetBindingWidget<ExtensionBrowseController> {
                   for (final ext in controller.runtimes)
                     Container(
                       margin: const EdgeInsets.only(bottom: 8),
-                      child: ExtensionBrowseTile(ext.extension),
+                      child: ExtensionTile(ext.extension),
                     ),
                 ],
               ),

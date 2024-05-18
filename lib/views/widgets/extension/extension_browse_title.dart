@@ -1,31 +1,27 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/utils/theme_utils.dart';
-import 'package:miru_app/views/pages/code_edit_page.dart';
-import 'package:miru_app/views/pages/extension/extension_settings_page.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/extension.dart';
 import 'package:miru_app/utils/i18n.dart';
+import 'package:miru_app/views/pages/search/extension_searcher_page.dart';
 import 'package:miru_app/views/widgets/cache_network_image.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as path;
 
-class ExtensionTile extends StatefulWidget {
-  const ExtensionTile(this.extension, {super.key});
+class ExtensionBrowseTile extends StatefulWidget {
+  const ExtensionBrowseTile(this.extension, {super.key});
 
   final Extension extension;
 
   @override
-  State<ExtensionTile> createState() => _ExtensionTileState();
+  State<ExtensionBrowseTile> createState() => _ExtensionTileState();
 }
 
-class _ExtensionTileState extends State<ExtensionTile> {
+class _ExtensionTileState extends State<ExtensionBrowseTile> {
   final fluent.FlyoutController moreFlyoutController =
       fluent.FlyoutController();
 
@@ -62,44 +58,11 @@ class _ExtensionTileState extends State<ExtensionTile> {
         style: const TextStyle(fontSize: 12),
       ),
       onTap: () {
-        Get.to(ExtensionSettingsPage(package: widget.extension.package));
+        Get.to(ExtensionSearcherPage(
+          package: widget.extension.package,
+        ));
       },
       contentPadding: const EdgeInsets.only(left: 16),
-      trailing: IconButton(
-        onPressed: () {
-          // 弹出菜单
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return SafeArea(
-                minimum: const EdgeInsets.only(left: 16, right: 16, top: 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.code),
-                      title: Text('extension.edit-code'.i18n),
-                      onTap: () async {
-                        Get.back();
-                        Get.to(CodeEditPage(extension: widget.extension));
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.delete),
-                      title: Text('common.uninstall'.i18n),
-                      onTap: () {
-                        ExtensionUtils.uninstall(widget.extension.package);
-                        Get.back();
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-        icon: const Icon(Icons.more_vert),
-      ),
     );
   }
 
@@ -166,8 +129,10 @@ class _ExtensionTileState extends State<ExtensionTile> {
               icon: const Icon(fluent.FluentIcons.settings),
               onPressed: () {
                 router.push(Uri(
-                  path: '/extension_settings',
-                  queryParameters: {'package': widget.extension.package},
+                  path: "/search_extension",
+                  queryParameters: {
+                    "package": widget.extension.package,
+                  },
                 ).toString());
               }),
           const SizedBox(width: 8),

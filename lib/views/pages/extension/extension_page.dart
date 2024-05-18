@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/base/widget/get_binding_widget.dart';
-import 'package:miru_app/controllers/extension/extension_browse_controller.dart';
 import 'package:miru_app/controllers/extension/extension_page_controller.dart';
 import 'package:miru_app/utils/i18n.dart';
+import 'package:miru_app/views/dialogs/extension_dialogs.dart';
+import 'package:miru_app/views/pages/search/search_page.dart';
+
+import 'extension_repo_page.dart';
 
 class ExtensionPage extends GetBindingWidget<ExtensionPageController> {
   const ExtensionPage({super.key});
@@ -11,7 +14,6 @@ class ExtensionPage extends GetBindingWidget<ExtensionPageController> {
   @override
   Bindings? binding() {
     return BindingsBuilder(() {
-      Get.lazyPut(() => ExtensionBrowseController());
       Get.lazyPut(() => ExtensionPageController());
     });
   }
@@ -22,22 +24,73 @@ class ExtensionPage extends GetBindingWidget<ExtensionPageController> {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          appBar: TabBar(
-            tabs: [
-              Tab(text: 'common.browse'.i18n),
-              Tab(text: 'extension.extension-manager'.i18n),
-            ],
-            onTap: (value) {
-              controller.pageController.jumpToPage(value);
-            },
+          appBar: AppBar(
+            actions: _appbarAction(context),
+            title: Text("common.extension".i18n),
           ),
-          body: PageView(
-            physics: const NeverScrollableScrollPhysics(),
-            controller: controller.pageController,
-            children: controller.pages,
+          body: Column(
+            children: [
+              TabBar(
+                tabs: [
+                  Tab(text: 'common.browse'.i18n),
+                  Tab(text: 'extension.extension-manager'.i18n),
+                ],
+                onTap: (value) {
+                  controller.pageController.jumpToPage(value);
+                },
+              ),
+              Expanded(
+                child: PageView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: controller.pageController,
+                  children: controller.pages,
+                ),
+              )
+            ],
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _appbarAction(BuildContext context) {
+    var bro = [
+      IconButton(
+        onPressed: () {
+          Get.to(
+            () => const SearchPage(),
+          );
+        },
+        icon: const Icon(Icons.search),
+      ),
+    ];
+    var ext = [
+      if (controller.errors.isNotEmpty)
+        IconButton(
+          icon: const Icon(Icons.error),
+          onPressed: () =>
+              ExtensionDialogs.loadErrorDialog(context, controller.errors),
+        ),
+      IconButton(
+        onPressed: () => ExtensionDialogs.importDialog(context),
+        icon: const Icon(
+          Icons.add_rounded,
+          size: 32,
+        ),
+      ),
+      IconButton(
+        onPressed: () {
+          Get.to(
+            () => const ExtensionRepoPage(),
+          );
+        },
+        icon: const Icon(Icons.download),
+      )
+    ];
+    if (controller.currentPage.value == 0) {
+      return bro;
+    } else {
+      return ext;
+    }
   }
 }
