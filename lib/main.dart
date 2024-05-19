@@ -20,6 +20,7 @@ import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/miru_storage.dart';
 import 'package:miru_app/utils/application.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
+import 'package:path/path.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main(List<String> args) async {
@@ -81,13 +82,20 @@ void main(List<String> args) async {
         await windowManager.focus();
       });
     }
-
     if (Platform.isAndroid) {
-      SystemUiOverlayStyle style = const SystemUiOverlayStyle(
+      SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
       );
-      SystemChrome.setSystemUIOverlayStyle(style);
+      SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+          overlays: []);
+      SystemChrome.setSystemUIChangeCallback((systemOverlaysAreVisible) async {
+        await Future.delayed(const Duration(milliseconds: 500));
+        SystemChrome.restoreSystemUIOverlays();
+      });
     }
 
     runApp(const MainApp());
