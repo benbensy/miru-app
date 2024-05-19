@@ -134,7 +134,8 @@
     "export-log-subtitle": "导出日志文件到本地",
     "advanced": "高级",
     "pure-black-mode": "纯黑模式",
-    "pure-black-mode-subtitle": "纯黑暗色主题"
+    "pure-black-mode-subtitle": "纯黑暗色主题",
+    "update": "更新"
   },
   "external-player-launching": "正在启动 {player}",
   "detail": {

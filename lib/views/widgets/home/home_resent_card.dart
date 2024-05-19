@@ -24,6 +24,7 @@ class HomeRecentCard extends StatefulWidget {
     super.key,
     required this.history,
   });
+
   final History history;
 
   @override
@@ -35,6 +36,7 @@ class _HomeRecentCardState extends State<HomeRecentCard> {
   String _update = "";
   final contextController = fluent.FlyoutController();
   final contextAttachKey = GlobalKey();
+
   // 主要颜色
   Color? primaryColor;
   late bool noCover = widget.history.cover == null;
@@ -273,12 +275,12 @@ class _HomeRecentCardState extends State<HomeRecentCard> {
         child: GestureDetector(
           onTap: () {
             if (Platform.isAndroid || Platform.isIOS) {
-              Get.to(
-                DetailPage(
-                  url: widget.history.url,
-                  package: widget.history.package,
-                ),
-              );
+              Get.to(() => {
+                    DetailPage(
+                      url: widget.history.url,
+                      package: widget.history.package,
+                    ),
+                  });
               return;
             }
             router.push(

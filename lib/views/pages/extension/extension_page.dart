@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:miru_app/base/widget/get_binding_widget.dart';
+import 'package:miru_app/base/widget/get_save_state_widget.dart';
 import 'package:miru_app/controllers/extension/extension_page_controller.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/dialogs/extension_dialogs.dart';
@@ -8,7 +8,7 @@ import 'package:miru_app/views/pages/search/search_page.dart';
 
 import 'extension_repo_page.dart';
 
-class ExtensionPage extends GetBindingWidget<ExtensionPageController> {
+class ExtensionPage extends GetSaveWidget<ExtensionPageController> {
   const ExtensionPage({super.key});
 
   @override

@@ -36,7 +36,7 @@ class _ExtensionTileState extends State<ExtensionTile> {
         height: 48,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: context.primaryColor.withOpacity(0.2),
+          color: context.primaryContainerColor,
           borderRadius: const BorderRadius.all(
             Radius.circular(20),
           ),

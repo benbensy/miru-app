@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:miru_app/base/widget/get_binding_widget.dart';
+import 'package:miru_app/base/widget/get_save_state_widget.dart';
 import 'package:miru_app/controllers/extension/extension_browse_controller.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/i18n.dart';
@@ -9,7 +9,7 @@ import 'package:miru_app/views/widgets/extension/extension_browse_title.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 
-class ExtensionBrowsePage extends GetBindingWidget<ExtensionBrowseController> {
+class ExtensionBrowsePage extends GetSaveWidget<ExtensionBrowseController> {
   const ExtensionBrowsePage({super.key});
 
   @override

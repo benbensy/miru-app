@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:miru_app/base/widget/get_save_state_widget.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/controllers/home_controller.dart';
 import 'package:miru_app/views/widgets/home/home_favorites.dart';
@@ -7,27 +8,29 @@ import 'package:miru_app/views/widgets/home/home_recent.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends GetSaveWidget<HomePageController> {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  late HomePageController c;
+  Bindings? binding() {
+    return BindingsBuilder(() {
+      Get.lazyPut(() => HomePageController());
+    });
+  }
 
   @override
-  void initState() {
-    c = Get.put(HomePageController());
-    super.initState();
+  Widget build(BuildContext context) {
+    return PlatformBuildWidget(
+      mobileBuilder: _buildMobileHome,
+      desktopBuilder: _buildDesktopHome,
+    );
   }
 
   Widget _buildContent() {
     return Obx(
       () {
-        if (c.resents.isEmpty &&
-            c.favorites.values.every((element) => element.isEmpty)) {
+        if (controller.resents.isEmpty &&
+            controller.favorites.values.every((element) => element.isEmpty)) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -54,24 +57,24 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (c.resents.isNotEmpty) ...[
+                if (controller.resents.isNotEmpty) ...[
                   HomeRecent(
-                    data: c.resents,
+                    data: controller.resents,
                   ),
                   const SizedBox(height: 16),
                 ],
-                if (c.favorites.isNotEmpty) ...[
+                if (controller.favorites.isNotEmpty) ...[
                   HomeFavorites(
                     type: ExtensionType.bangumi,
-                    data: c.favorites[ExtensionType.bangumi]!,
+                    data: controller.favorites[ExtensionType.bangumi]!,
                   ),
                   HomeFavorites(
                     type: ExtensionType.manga,
-                    data: c.favorites[ExtensionType.manga]!,
+                    data: controller.favorites[ExtensionType.manga]!,
                   ),
                   HomeFavorites(
                     type: ExtensionType.fikushon,
-                    data: c.favorites[ExtensionType.fikushon]!,
+                    data: controller.favorites[ExtensionType.fikushon]!,
                   ),
                 ]
               ],
@@ -93,13 +96,5 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildDesktopHome(BuildContext context) {
     return _buildContent();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PlatformBuildWidget(
-      mobileBuilder: _buildMobileHome,
-      desktopBuilder: _buildDesktopHome,
-    );
   }
 }

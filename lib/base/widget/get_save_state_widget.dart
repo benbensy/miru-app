@@ -17,6 +17,9 @@ abstract class GetSaveWidget<T extends GetxController> extends StatefulWidget {
   @protected
   Widget build(BuildContext context);
 
+  @protected
+  Bindings? binding();
+
   @override
   AutoDisposeState createState() => AutoDisposeState<T>();
 }
@@ -38,6 +41,7 @@ class AutoDisposeState<S extends GetxController> extends State<GetSaveWidget>
   @override
   void initState() {
     super.initState();
+    widget.binding()?.dependencies();
     if (widget.lifecycle != null) {
       WidgetsBinding.instance.addObserver(this);
     }

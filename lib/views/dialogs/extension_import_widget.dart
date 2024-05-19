@@ -134,7 +134,7 @@ class ExtensionImportWidget extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          InkResponse(
+          InkWell(
             child: Container(
               height: 48,
               width: double.infinity,
@@ -158,7 +158,7 @@ class ExtensionImportWidget extends StatelessWidget {
           const SizedBox(
             height: 1,
           ),
-          InkResponse(
+          InkWell(
             child: Container(
               width: double.infinity,
               height: 48,
@@ -194,7 +194,7 @@ class ExtensionImportWidget extends StatelessWidget {
           const SizedBox(
             height: 1,
           ),
-          InkResponse(
+          InkWell(
             child: Container(
               height: 48,
               width: double.infinity,

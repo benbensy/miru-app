@@ -154,7 +154,8 @@
     "export-log-subtitle": "Export log file",
     "advanced": "Advanced",
     "pure-black-mode": "Pure black mode",
-    "pure-black-mode-subtitle": "Pure dark theme"
+    "pure-black-mode-subtitle": "Pure dark theme",
+    "update": "Update"
   },
   "external-player-launching": "Launching {player}",
   "detail": {

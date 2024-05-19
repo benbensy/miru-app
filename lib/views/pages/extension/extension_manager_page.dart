@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:miru_app/base/widget/get_binding_widget.dart';
+import 'package:miru_app/base/widget/get_save_state_widget.dart';
 import 'package:miru_app/controllers/extension/extension_manager_controller.dart';
 import 'package:miru_app/views/dialogs/extension_dialogs.dart';
 import 'package:miru_app/views/dialogs/filter_extension_dialog.dart';
@@ -10,8 +10,7 @@ import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 
-class ExtensionManagerPage
-    extends GetBindingWidget<ExtensionManagerController> {
+class ExtensionManagerPage extends GetSaveWidget<ExtensionManagerController> {
   const ExtensionManagerPage({super.key});
 
   @override

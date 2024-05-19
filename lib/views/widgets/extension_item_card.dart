@@ -15,6 +15,7 @@ class ExtensionItemCard extends StatefulWidget {
     this.update,
     this.headers,
   });
+
   final String title;
   final String? cover;
   final String? update;
@@ -36,11 +37,13 @@ class _ExtensionItemCardState extends State<ExtensionItemCard> {
         subtitle: widget.update,
         headers: widget.headers,
         onTap: () {
-          Get.to(DetailPage(
-            url: widget.url,
-            package: widget.package,
-            tag: widget.url,
-          ));
+          Get.to(() => {
+                DetailPage(
+                  url: widget.url,
+                  package: widget.package,
+                  tag: widget.url,
+                )
+              });
         },
       ),
     );
