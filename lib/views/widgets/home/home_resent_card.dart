@@ -275,12 +275,12 @@ class _HomeRecentCardState extends State<HomeRecentCard> {
         child: GestureDetector(
           onTap: () {
             if (Platform.isAndroid || Platform.isIOS) {
-              Get.to(() => {
-                    DetailPage(
-                      url: widget.history.url,
-                      package: widget.history.package,
-                    ),
-                  });
+              Get.to(
+                DetailPage(
+                  url: widget.history.url,
+                  package: widget.history.package,
+                ),
+              );
               return;
             }
             router.push(

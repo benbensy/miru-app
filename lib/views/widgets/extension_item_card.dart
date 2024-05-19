@@ -37,13 +37,11 @@ class _ExtensionItemCardState extends State<ExtensionItemCard> {
         subtitle: widget.update,
         headers: widget.headers,
         onTap: () {
-          Get.to(() => {
-                DetailPage(
-                  url: widget.url,
-                  package: widget.package,
-                  tag: widget.url,
-                )
-              });
+          Get.to(DetailPage(
+            url: widget.url,
+            package: widget.package,
+            tag: widget.url,
+          ));
         },
       ),
     );
