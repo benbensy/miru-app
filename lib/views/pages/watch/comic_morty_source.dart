@@ -9,21 +9,31 @@ class ComicMortySource extends PagingSource<int, String> {
   ComicMortySource(
       {required this.extension,
       required this.playList,
-      required this.mangaWatch});
+      required this.mangaWatch,
+      required this.startPage}) {
+    _loadKey = startPage;
+  }
 
   final ValueChanged<ExtensionMangaWatch> mangaWatch;
   final Extension extension;
   final List<ExtensionEpisode> playList;
+  final int startPage;
 
   @override
   Future<LoadResult<int, String>> load(LoadParams<int> params) async {
     try {
       var currentPlayUrl = playList[_loadKey].url;
-      var result = await ExtensionHelper(extension).watch(currentPlayUrl) as ExtensionMangaWatch;
+      var result = await ExtensionHelper(extension).watch(currentPlayUrl)
+          as ExtensionMangaWatch;
+      var list = [
+        if (_loadKey > 1) "[chapter]下一章: ${playList[_loadKey - 1].name}",
+        ...result.urls,
+        "[chapter]上一章: ${playList[_loadKey - 1].name}"
+      ];
       mangaWatch.call(result);
       return LoadResult.page(
         nextKey: _loadKey++,
-        items: result.urls,
+        items: list,
       );
     } catch (e) {
       return LoadResult.error(e);

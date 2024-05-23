@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
+import 'package:miru_app/controllers/tracking_page_controller.dart';
 
 class AnilistWebViewPage extends StatefulWidget {
   const AnilistWebViewPage({
@@ -35,7 +36,10 @@ class _AnilistWebViewPageState extends State<AnilistWebViewPage> {
         onLoadStart: (controller, url) async {
           if (url != null && url.toString().contains("access_token")) {
             debugPrint(url.host);
-            Get.back(result: url.toString());
+            Get.find<TrackingPageController>().saveAnilistToken(url.toString());
+            controller.dispose();
+            Navigator.pop(context);
+            //Get.back(result: url.toString());
           }
         },
       ),

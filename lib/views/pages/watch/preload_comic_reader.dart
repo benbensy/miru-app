@@ -39,6 +39,7 @@ class PreloadComicReader
         () => PreloadComicReaderController(
           extension: extension,
           playList: playList,
+          startPage: playerIndex,
         ),
       );
     });
@@ -67,6 +68,22 @@ class PreloadComicReader
         pager: controller.pager,
         itemBuilder: (BuildContext context, int index) {
           final item = controller.pager.items.elementAt(index);
+          if (item.startsWith("[chapter]")) {
+            return Container(
+              width: double.infinity,
+              height: Get.height / 12,
+              color: Colors.black,
+              child: Center(
+                child: Text(
+                  item.replaceAll("[chapter]", ""),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            );
+          }
           return CacheNetWorkImagePic(
             item,
             fit: BoxFit.fitWidth,

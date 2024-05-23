@@ -8,6 +8,7 @@ class PreloadComicReaderController extends GetxController {
   final List<ExtensionEpisode> playList;
   final Extension extension;
   ExtensionMangaWatch? currentMange;
+  int startPage;
 
   late final pager = Pager(
     initialKey: 1,
@@ -15,6 +16,7 @@ class PreloadComicReaderController extends GetxController {
     pagingSourceFactory: () => ComicMortySource(
       extension: extension,
       playList: playList,
+      startPage: startPage,
       mangaWatch: (mange) {
         currentMange = mange;
       },
@@ -24,5 +26,6 @@ class PreloadComicReaderController extends GetxController {
   PreloadComicReaderController({
     required this.playList,
     required this.extension,
+    required this.startPage,
   });
 }
