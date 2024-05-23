@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:get/get.dart';
+import 'package:miru_app/data/services/cookie_utils.dart';
 import 'package:miru_app/models/extension_setting.dart';
 import 'package:miru_app/views/pages/code_edit_page.dart';
 import 'package:miru_app/controllers/extension/extension_settings_controller.dart';
@@ -132,12 +133,12 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
 
   Widget _buildAndroid(BuildContext context) {
     return Obx(() {
-      if (c.runtime.value == null) {
+      if (c.extension.value == null) {
         return const Center(
           child: ProgressRing(),
         );
       }
-      final extension = c.runtime.value!.extension;
+      final extension = c.extension.value!;
 
       final content = SingleChildScrollView(
         child: Column(
@@ -246,7 +247,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
                 trailing: TextButton(
                   child: Text('cookie-clean.clean'.i18n),
                   onPressed: () {
-                    c.runtime.value!.cleanCookie();
+                    cleanCookie(extension);
                     showPlatformSnackbar(
                       context: context,
                       content: 'cookie-clean.success'.i18n,
@@ -280,7 +281,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
                             trailing: TextButton(
                               child: Text('cookie-clean.clean'.i18n),
                               onPressed: () {
-                                c.runtime.value!.cleanCookie();
+                                cleanCookie(extension);
                                 showPlatformSnackbar(
                                   context: context,
                                   content: 'cookie-clean.success'.i18n,
@@ -302,13 +303,13 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
 
   Widget _buildDesktop(BuildContext context) {
     return Obx(() {
-      if (c.runtime.value == null) {
+      if (c.extension.value == null) {
         return const Center(
           child: ProgressRing(),
         );
       }
 
-      final extension = c.runtime.value!.extension;
+      final extension = c.extension.value!;
       return Padding(
         padding: const EdgeInsets.all(16),
         child: LayoutBuilder(builder: ((context, constraints) {
@@ -436,7 +437,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
                           trailing: fluent.FilledButton(
                             child: Text('cookie-clean.clean'.i18n),
                             onPressed: () {
-                              c.runtime.value!.cleanCookie();
+                              cleanCookie(extension);
                               showPlatformSnackbar(
                                 context: context,
                                 content: 'cookie-clean.success'.i18n,

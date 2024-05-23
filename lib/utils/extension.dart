@@ -10,7 +10,6 @@ import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/controllers/extension/extension_page_controller.dart';
 import 'package:miru_app/controllers/search_controller.dart';
 import 'package:miru_app/controllers/settings_controller.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/miru_directory.dart';
 import 'package:miru_app/utils/request.dart';
@@ -20,7 +19,7 @@ import 'package:miru_app/views/widgets/messenger.dart';
 import 'package:path/path.dart' as path;
 
 class ExtensionUtils {
-  static Map<String, ExtensionService> runtimes = {};
+  static Map<String, Extension> extensions = {};
   static Map<String, String> extensionErrorMap = {};
 
   static String get extensionsDir => path.join(
@@ -39,7 +38,7 @@ class ExtensionUtils {
         if (path.extension(event.path) == '.js') {
           final package = path.basenameWithoutExtension(event.path);
           debugPrint('extension event: ${event.path} ${event.type}');
-          runtimes.remove(package);
+          extensions.remove(package);
           extensionErrorMap.remove(event.path);
           switch (event.type) {
             case FileSystemEvent.delete:
@@ -72,7 +71,7 @@ class ExtensionUtils {
       file.deleteSync();
       if (Platform.isIOS || Platform.isMacOS) {
         final package = path.basenameWithoutExtension(file.path);
-        runtimes.remove(package);
+        extensions.remove(package);
         extensionErrorMap.remove(file.path);
         _reloadPage();
       }
@@ -117,7 +116,7 @@ class ExtensionUtils {
       final savePath = path.join(extensionsDir, '${ext.package}.js');
       // 保存文件
       File(savePath).writeAsStringSync(script);
-      runtimes[ext.package] = await ExtensionService().initRuntime(ext);
+      extensions[ext.package] = ext;
       _reloadPage();
     } catch (e) {
       if (context.mounted) {
@@ -149,7 +148,7 @@ class ExtensionUtils {
         if (path.basenameWithoutExtension(p) != ext.package) {
           throw Exception("Inconsistency between file name and package name");
         }
-        runtimes[ext.package] = await ExtensionService().initRuntime(ext);
+        extensions[ext.package] = ext;
       } catch (e) {
         extensionErrorMap[p] = e.toString();
       }

@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
+import 'package:miru_app/data/services/extension_helper.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/models/history.dart';
 import 'package:miru_app/controllers/home_controller.dart';
 import 'package:miru_app/data/services/database_service.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 
 class ReaderController<T> extends GetxController {
   final String title;
@@ -13,7 +13,7 @@ class ReaderController<T> extends GetxController {
   final String detailUrl;
   final int playIndex;
   final int episodeGroupId;
-  final ExtensionService runtime;
+  final Extension extension;
   final String? cover;
   final String anilistID;
 
@@ -23,7 +23,7 @@ class ReaderController<T> extends GetxController {
     required this.detailUrl,
     required this.playIndex,
     required this.episodeGroupId,
-    required this.runtime,
+    required this.extension,
     required this.anilistID,
     this.cover,
   });
@@ -46,7 +46,7 @@ class ReaderController<T> extends GetxController {
     try {
       error.value = '';
       watchData.value = null;
-      watchData.value = await runtime.watch(cuurentPlayUrl) as T;
+      watchData.value = await ExtensionHelper(extension).watch(cuurentPlayUrl) as T;
     } catch (e) {
       error.value = e.toString();
     }
@@ -69,9 +69,9 @@ class ReaderController<T> extends GetxController {
       History()
         ..url = detailUrl
         ..episodeId = index.value
-        ..type = runtime.extension.type
+        ..type = extension.type
         ..episodeGroupId = episodeGroupId
-        ..package = runtime.extension.package
+        ..package = extension.package
         ..episodeTitle = playList[index.value].name
         ..title = title
         ..progress = progress

@@ -32,6 +32,7 @@ class ExtensionManagerPage extends GetSaveWidget<ExtensionManagerController> {
     return Obx(() {
       return Scaffold(
         floatingActionButton: FloatingActionButton(
+          heroTag: null,
           onPressed: () {
             FilterExtensionDialog.show(
               context,
@@ -43,9 +44,10 @@ class ExtensionManagerPage extends GetSaveWidget<ExtensionManagerController> {
           },
           child: const Icon(Icons.filter_alt_outlined),
         ),
-        body: ListView(
-          children: [
-            if (controller.runtimes.isEmpty)
+        body: ListView.builder(
+          itemCount: controller.extensions.length,
+          itemBuilder: (BuildContext context, int index) {
+            if (controller.extensions.isEmpty) {
               SizedBox(
                 height: 300,
                 child: Column(
@@ -54,9 +56,11 @@ class ExtensionManagerPage extends GetSaveWidget<ExtensionManagerController> {
                     Text('common.no-extension'.i18n),
                   ],
                 ),
-              ),
-            for (final ext in controller.runtimes) ExtensionTile(ext.extension),
-          ],
+              );
+            }
+            var ext = controller.extensions[index];
+            return ExtensionTile(ext);
+          },
         ),
       );
     });
@@ -97,7 +101,7 @@ class ExtensionManagerPage extends GetSaveWidget<ExtensionManagerController> {
               ],
             ),
             const SizedBox(height: 16),
-            if (controller.runtimes.isEmpty)
+            if (controller.extensions.isEmpty)
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -118,10 +122,10 @@ class ExtensionManagerPage extends GetSaveWidget<ExtensionManagerController> {
             Expanded(
               child: ListView(
                 children: [
-                  for (final ext in controller.runtimes)
+                  for (final ext in controller.extensions)
                     Container(
                       margin: const EdgeInsets.only(bottom: 8),
-                      child: ExtensionTile(ext.extension),
+                      child: ExtensionTile(ext),
                     ),
                 ],
               ),

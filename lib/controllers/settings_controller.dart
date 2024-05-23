@@ -4,8 +4,9 @@ import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_js/flutter_js.dart';
+import 'package:flutter_js/extensions/handle_promises.dart';
 import 'package:get/get.dart';
+import 'package:miru_app/data/services/runtime_helper.dart';
 import 'package:miru_app/utils/extension.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/miru_storage.dart';
@@ -189,18 +190,18 @@ class SettingsController extends GetxController {
       if (call["method"] == "getInstalledExtensions") {
         _invokeMethodResult(
           call["key"],
-          ExtensionUtils.runtimes.values
+          ExtensionUtils.extensions.values
               .toList()
-              .map((e) => e.extension.toJson())
+              .map((e) => e.toJson())
               .toList(),
         );
       }
 
       if (call["method"] == "debugExecute") {
         final arguments = call["arguments"];
-        final extension = ExtensionUtils.runtimes[arguments["package"]];
+        final extension = ExtensionUtils.extensions[arguments["package"]];
         final method = arguments["method"];
-        final runtime = extension!.runtime;
+        final runtime = await RuntimeHelper.instance.getRuntime(extension!);
         try {
           final jsResult = await runtime.handlePromise(
             await runtime.evaluateAsync('stringify(()=>{return $method})'),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miru_app/models/extension.dart';
-import 'package:miru_app/views/pages/watch/reader/comic/comic_reader.dart';
+import 'package:miru_app/views/pages/watch/preload_comic_reader.dart';
 import 'package:miru_app/views/pages/watch/reader/novel/novel_reader.dart';
 import 'package:miru_app/views/pages/watch/video/video_player.dart';
 import 'package:miru_app/utils/extension.dart';
@@ -28,13 +28,13 @@ class WatchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final runtime = ExtensionUtils.runtimes[package]!;
-    switch (runtime.extension.type) {
+    final extension = ExtensionUtils.extensions[package]!;
+    switch (extension.type) {
       case ExtensionType.bangumi:
         return VideoPlayer(
           title: title,
           playList: playList,
-          runtime: runtime,
+          extension: extension,
           playerIndex: playerIndex,
           // 用来存储历史记录了
           episodeGroupId: episodeGroupId,
@@ -42,20 +42,20 @@ class WatchPage extends StatelessWidget {
           anilistID: anilistID,
         );
       case ExtensionType.manga:
-        return ComicReader(
+        return PreloadComicReader(
           title: title,
           playList: playList,
           detailUrl: detailUrl,
           playerIndex: playerIndex,
           episodeGroupId: episodeGroupId,
-          runtime: runtime,
+          extension: extension,
           cover: cover,
           anilistID: anilistID,
         );
       default:
         return NovelReader(
           playList: playList,
-          runtime: runtime,
+          extension: extension,
           episodeGroupId: episodeGroupId,
           playerIndex: playerIndex,
           title: title,

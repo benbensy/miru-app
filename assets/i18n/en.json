@@ -54,7 +54,8 @@
     "disconnect": "Disconnect",
     "update": "Update",
     "download": "Download",
-    "browse": "Browse"
+    "browse": "Browse",
+    "more": "更多"
   },
   "home": {
     "continue-watching": "Continue",
@@ -155,7 +156,8 @@
     "advanced": "Advanced",
     "pure-black-mode": "Pure black mode",
     "pure-black-mode-subtitle": "Pure dark theme",
-    "update": "Update"
+    "update": "Update",
+    "download-manager": "Download manager"
   },
   "external-player-launching": "Launching {player}",
   "detail": {

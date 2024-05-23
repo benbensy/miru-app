@@ -9,6 +9,8 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_windows_webview/flutter_windows_webview.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/data/providers/tmdb_provider.dart';
+import 'package:miru_app/data/services/cookie_utils.dart';
+import 'package:miru_app/data/services/extension_helper.dart';
 import 'package:miru_app/models/index.dart';
 import 'package:miru_app/views/dialogs/tmdb_binding.dart';
 import 'package:miru_app/controllers/home_controller.dart';
@@ -17,7 +19,6 @@ import 'package:miru_app/views/pages/watch/watch_page.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/data/services/database_service.dart';
 import 'package:miru_app/utils/extension.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/utils/external_player.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/miru_storage.dart';
@@ -44,10 +45,10 @@ class DetailPageController extends GetxController {
   final RxInt selectEpGroup = 0.obs;
   final RxString aniListID = ''.obs;
   final Rx<TMDBDetail?> tmdb = Rx(null);
-  final Rx<ExtensionService?> runtime = Rx(null);
+  final Rx<Extension?> extensions = Rx(null);
   ExtensionType get type =>
-      runtime.value?.extension.type ?? ExtensionType.bangumi;
-  Extension? get extension => runtime.value?.extension;
+      extensions.value?.type ?? ExtensionType.bangumi;
+  Extension? get extension => extensions.value;
 
   ExtensionDetail? get detail => data.value;
   set detail(ExtensionDetail? value) => data.value = value;
@@ -91,7 +92,8 @@ class DetailPageController extends GetxController {
                   if (value.containsKey("cf_clearance")) {
                     debugPrint("验证通过");
                   }
-                  runtime.value!.setCookie(
+                  setCookie(
+                    extension!,
                     value.entries
                         .map((e) => '${e.key}=${e.value}')
                         .toList()
@@ -139,7 +141,7 @@ class DetailPageController extends GetxController {
   }
 
   onRefresh() async {
-    runtime.value = ExtensionUtils.runtimes[package];
+    extensions.value = ExtensionUtils.extensions[package];
     await refreshFavorite();
     try {
       _miruDetail = await DatabaseService.getMiruDetail(package, url);
@@ -201,7 +203,7 @@ class DetailPageController extends GetxController {
 
   getRemoteDeatil() async {
     try {
-      detail = await runtime.value!.detail(url);
+      detail = await ExtensionHelper(extension!).detail(url);
       await DatabaseService.putMiruDetail(
         package,
         url,
@@ -211,7 +213,7 @@ class DetailPageController extends GetxController {
       );
     } catch (e) {
       // 弹出错误信息
-      if (runtime.value == null) {
+      if (extensions.value == null) {
         final content = FlutterI18n.translate(
           currentContext,
           'common.extension-missing',
@@ -336,7 +338,7 @@ class DetailPageController extends GetxController {
     int index,
     int selectEpGroup,
   ) async {
-    if (runtime.value == null) {
+    if (extensions.value == null) {
       showPlatformSnackbar(
         context: currentContext,
         content: FlutterI18n.translate(
@@ -367,7 +369,7 @@ class DetailPageController extends GetxController {
         );
         late ExtensionBangumiWatch watchData;
         try {
-          watchData = await runtime.value!.watch(urls[index].url)
+          watchData = await ExtensionHelper(extension!).watch(urls[index].url)
               as ExtensionBangumiWatch;
         } catch (e) {
           showPlatformSnackbar(

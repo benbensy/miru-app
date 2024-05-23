@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
+import 'package:miru_app/data/services/extension_helper.dart';
 import 'package:miru_app/models/index.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/extension.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/widgets/button.dart';
 import 'package:miru_app/views/widgets/extension_item_card.dart';
@@ -33,7 +33,7 @@ class ExtensionSearcherPage extends StatefulWidget {
 }
 
 class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
-  late ExtensionService _runtime;
+  late Extension _extension;
   late String _keyWord = widget.keyWord ?? '';
   final List<ExtensionListItem> _data = [];
   int _page = 1;
@@ -60,7 +60,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
   }
 
   _initFilters() async {
-    _filters = await _runtime.createFilter();
+    _filters = await ExtensionHelper(_extension).createFilter();
     _filters!.forEach((key, value) {
       _selectedFilters[key] = [value.defaultOption];
     });
@@ -77,13 +77,14 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
   Future<void> _onLoad() async {
     try {
+      var extensionHelper = ExtensionHelper(_extension);
       _isLoading = true;
       setState(() {});
       late List<ExtensionListItem> data;
       if (_keyWord.isEmpty && _filters == null) {
-        data = await _runtime.latest(_page);
+        data = await extensionHelper.latest(_page);
       } else {
-        data = await _runtime.search(_keyWord, _page, filter: _selectedFilters);
+        data = await extensionHelper.search(_keyWord, _page, filter: _selectedFilters);
       }
       if (data.isEmpty && mounted) {
         showPlatformSnackbar(
@@ -121,7 +122,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
   _onFilter(BuildContext context) {
     final fiterWidget = _ExtensionFilterWidget(
-      runtime: _runtime,
+      extension: _extension,
       filters: _filters!,
       selectedFilters: _selectedFilters,
       onSelectFilter: (selectedFilters, filters) {
@@ -206,7 +207,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
   Widget _buildMobile(BuildContext context) {
     return Scaffold(
       appBar: SearchAppBar(
-        title: _runtime.extension.name,
+        title: _extension.name,
         textEditingController: _textEditingController,
         onChanged: (value) {
           if (value.isEmpty) {
@@ -284,7 +285,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  _runtime.extension.name,
+                  _extension.name,
                   style: fluent.FluentTheme.of(context).typography.subtitle,
                 ),
               ),
@@ -351,7 +352,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
   @override
   Widget build(BuildContext context) {
-    final runtime = ExtensionUtils.runtimes[widget.package];
+    final extension = ExtensionUtils.extensions[widget.package];
     final extensionMissing = Text(
       FlutterI18n.translate(
         context,
@@ -359,7 +360,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
         translationParams: {'package': widget.package},
       ),
     );
-    if (runtime == null) {
+    if (extension == null) {
       return PlatformWidget(
         mobileWidget: Scaffold(
           body: extensionMissing,
@@ -369,7 +370,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
         ),
       );
     }
-    _runtime = runtime;
+    _extension = extension;
     return PlatformBuildWidget(
       mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
@@ -379,12 +380,12 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
 class _ExtensionFilterWidget extends StatefulWidget {
   const _ExtensionFilterWidget({
-    required this.runtime,
+    required this.extension,
     required this.selectedFilters,
     required this.onSelectFilter,
     required this.filters,
   });
-  final ExtensionService runtime;
+  final Extension extension;
   final Map<String, ExtensionFilter> filters;
   final Map<String, List<String>> selectedFilters;
   final Function(
@@ -397,7 +398,7 @@ class _ExtensionFilterWidget extends StatefulWidget {
 }
 
 class _ExtensionFilterWidgetState extends State<_ExtensionFilterWidget> {
-  late final ExtensionService _runtime = widget.runtime;
+  late final Extension _extension = widget.extension;
   late Map<String, ExtensionFilter> _filters = widget.filters;
   // 初始化一开始选择的选项
   late Map<String, List<String>> _selectedFilters = widget.selectedFilters;
@@ -417,7 +418,7 @@ class _ExtensionFilterWidgetState extends State<_ExtensionFilterWidget> {
     }
     // 再请求一次 _filters
     final filters = Map<String, ExtensionFilter>.from(
-      await _runtime.createFilter(filter: selectedFilters),
+      await ExtensionHelper(_extension).createFilter(filter: selectedFilters),
     );
 
     // 剔除 _filters 中不能存在的选项

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/base/widget/get_save_state_widget.dart';
@@ -63,12 +64,14 @@ class SettingsPage extends GetSaveWidget<SettingsController> {
         const SizedBox(height: 16),
       ],
       Container(
+        height: 180,
         margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(
+          fit: StackFit.expand,
           children: [
             Image.asset(
               'assets/image/settings_head.png',
@@ -96,7 +99,7 @@ class SettingsPage extends GetSaveWidget<SettingsController> {
                     ),
                   ),
                   Align(
-                    heightFactor: 5,
+                    heightFactor: 4.5,
                     alignment: Alignment.bottomRight,
                     child: InkWell(
                       child: Text(
@@ -490,6 +493,18 @@ class SettingsPage extends GetSaveWidget<SettingsController> {
       // 高级
       ListTitle(title: 'settings.advanced'.i18n),
       const SizedBox(height: 20),
+      SettingsExpanderTile(
+        icon: fluent.FluentIcons.download,
+        androidIcon: Icons.download,
+        title: 'common.download'.i18n,
+        subTitle: 'settings.download-manager'.i18n,
+        content: const Column(
+          children: [
+
+          ],
+        ),
+      ),
+      const SizedBox(height: 10),
       // 网络设置
       SettingsExpanderTile(
         content: Column(

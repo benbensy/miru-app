@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:miru_app/data/services/extension_service.dart';
+import 'package:miru_app/data/services/cookie_utils.dart';
+import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/utils/miru_storage.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class WebViewPage extends StatefulWidget {
   const WebViewPage({
     super.key,
-    this.extensionRuntime,
+    this.extension,
     required this.url,
   });
 
-  final ExtensionService? extensionRuntime;
+  final Extension? extension;
   final String url;
 
   @override
@@ -31,17 +32,20 @@ class _WebViewPageState extends State<WebViewPage> {
     final cookieString =
         cookies.map((e) => '${e.name}=${e.value}').toList().join(';');
     debugPrint('$url $cookieString');
-    widget.extensionRuntime?.setCookie(
-      cookieString,
-    );
+    setCookie(widget.extension!,cookieString);
   }
 
   @override
   void initState() {
-    if (widget.extensionRuntime == null) {
+    if (widget.extension == null) {
       url = widget.url;
     } else {
-      url = widget.extensionRuntime!.extension.webSite + widget.url;
+      var webSite = widget.extension!.webSite;
+      if (webSite.endsWith("/")) {
+        url = widget.extension!.webSite + widget.url;
+      } else {
+        url = "${widget.extension!.webSite}/${widget.url}";
+      }
     }
     super.initState();
   }

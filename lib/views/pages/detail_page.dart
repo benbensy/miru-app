@@ -116,7 +116,7 @@ class _DetailPageState extends State<DetailPage> {
                       onPressed: () {
                         Get.to(
                           WebViewPage(
-                            extensionRuntime: c.runtime.value!,
+                            extension: c.extension,
                             url: c.url,
                           ),
                         );

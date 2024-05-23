@@ -31,6 +31,7 @@ class ExtensionBrowsePage extends GetSaveWidget<ExtensionBrowseController> {
     return Obx(() {
       return Scaffold(
         floatingActionButton: FloatingActionButton(
+          heroTag: null,
           onPressed: () {
             FilterExtensionDialog.show(
               context,
@@ -42,9 +43,10 @@ class ExtensionBrowsePage extends GetSaveWidget<ExtensionBrowseController> {
           },
           child: const Icon(Icons.filter_alt_outlined),
         ),
-        body: ListView(
-          children: [
-            if (controller.runtimes.isEmpty)
+        body: ListView.builder(
+          itemCount: controller.extensions.length,
+          itemBuilder: (BuildContext context, int index) {
+            if (controller.extensions.isEmpty) {
               SizedBox(
                 height: 300,
                 child: Column(
@@ -53,9 +55,11 @@ class ExtensionBrowsePage extends GetSaveWidget<ExtensionBrowseController> {
                     Text('common.no-extension'.i18n),
                   ],
                 ),
-              ),
-            for (final ext in controller.runtimes) ExtensionBrowseTile(ext.extension),
-          ],
+              );
+            }
+            var ext = controller.extensions[index];
+            return ExtensionBrowseTile(ext);
+          },
         ),
       );
     });
@@ -80,7 +84,7 @@ class ExtensionBrowsePage extends GetSaveWidget<ExtensionBrowseController> {
               ],
             ),
             const SizedBox(height: 16),
-            if (controller.runtimes.isEmpty)
+            if (controller.extensions.isEmpty)
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -101,10 +105,10 @@ class ExtensionBrowsePage extends GetSaveWidget<ExtensionBrowseController> {
             Expanded(
               child: ListView(
                 children: [
-                  for (final ext in controller.runtimes)
+                  for (final ext in controller.extensions)
                     Container(
                       margin: const EdgeInsets.only(bottom: 8),
-                      child: ExtensionBrowseTile(ext.extension),
+                      child: ExtensionBrowseTile(ext),
                     ),
                 ],
               ),

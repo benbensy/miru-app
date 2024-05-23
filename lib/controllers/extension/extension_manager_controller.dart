@@ -1,10 +1,9 @@
 import 'package:get/get.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/utils/extension.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 
 class ExtensionManagerController extends GetxController {
-  List<ExtensionService> runtimes = <ExtensionService>[].obs;
+  List<Extension> extensions = <Extension>[].obs;
   RxMap<String, String> errors = <String, String>{}.obs;
   RxBool isInstallLoading = false.obs;
   bool needRefresh = true;
@@ -42,16 +41,16 @@ class ExtensionManagerController extends GetxController {
   }
 
   void _filterExtData(ExtensionType? type) {
-    runtimes.clear();
-    var filter = ExtensionUtils.runtimes.values
-        .where((element) => element.extension.type == type);
-    runtimes.addAll(filter);
+    extensions.clear();
+    var filter = ExtensionUtils.extensions.values
+        .where((element) => element.type == type);
+    extensions.addAll(filter);
   }
 
   onRefresh() async {
-    runtimes.clear();
+    extensions.clear();
     errors.clear();
-    runtimes.addAll(ExtensionUtils.runtimes.values);
+    extensions.addAll(ExtensionUtils.extensions.values);
     errors.addAll(ExtensionUtils.extensionErrorMap);
   }
 

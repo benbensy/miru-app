@@ -5,6 +5,7 @@ import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
+import 'package:miru_app/data/services/extension_helper.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/models/history.dart';
 import 'package:miru_app/views/pages/detail_page.dart';
@@ -13,11 +14,9 @@ import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/color.dart';
 import 'package:miru_app/data/services/database_service.dart';
 import 'package:miru_app/utils/extension.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/widgets/cache_network_image.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
-import 'package:palette_generator/palette_generator.dart';
 
 class HomeRecentCard extends StatefulWidget {
   const HomeRecentCard({
@@ -32,7 +31,7 @@ class HomeRecentCard extends StatefulWidget {
 }
 
 class _HomeRecentCardState extends State<HomeRecentCard> {
-  late ExtensionService? _runtime;
+  late Extension? _extension;
   String _update = "";
   final contextController = fluent.FlyoutController();
   final contextAttachKey = GlobalKey();
@@ -57,11 +56,11 @@ class _HomeRecentCardState extends State<HomeRecentCard> {
   }
 
   _getUpdate() async {
-    _runtime = ExtensionUtils.runtimes[widget.history.package];
-    if (_runtime == null) {
+    _extension = ExtensionUtils.extensions[widget.history.package];
+    if (_extension == null) {
       return;
     }
-    _update = await _runtime!.checkUpdate(widget.history.url);
+    _update = await ExtensionHelper(_extension!).checkUpdate(widget.history.url);
     if (mounted) {
       setState(() {});
     }
@@ -71,12 +70,12 @@ class _HomeRecentCardState extends State<HomeRecentCard> {
     if (widget.history.type == ExtensionType.bangumi || noCover) {
       return;
     }
-    final paletteGenerator = await PaletteGenerator.fromImageProvider(
-      provider,
-      maximumColorCount: 2,
-    );
+    // final paletteGenerator = await PaletteGenerator.fromImageProvider(
+    //   provider,
+    //   maximumColorCount: 2,
+    // );
 
-    primaryColor = paletteGenerator.colors.firstOrNull;
+   // primaryColor = paletteGenerator.colors.firstOrNull;
 
     if (mounted) {
       setState(() {});

@@ -1,9 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miru_app/views/pages/download/download_page.dart';
 import 'package:miru_app/views/pages/extension/extension_page.dart';
 import 'package:miru_app/views/pages/home_page.dart';
 import 'package:miru_app/controllers/main_controller.dart';
@@ -193,7 +191,6 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
     HomePage(),
     UpdatePage(),
     ExtensionPage(),
-    DownloadPage(),
     SettingsPage(),
   ];
 
@@ -215,9 +212,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
       _Destination(
           Icons.extension_outlined, Icons.extension, 'common.extension'.i18n),
       _Destination(
-          Icons.download_outlined, Icons.download, 'common.download'.i18n),
-      _Destination(
-          Icons.settings_outlined, Icons.settings, 'common.settings'.i18n),
+          Icons.more_horiz_outlined, Icons.more_horiz_outlined, 'common.more'.i18n),
     ];
     return Obx(
       () => Scaffold(

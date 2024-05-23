@@ -1,10 +1,9 @@
 import 'package:get/get.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/utils/extension.dart';
 
 class ExtensionBrowseController extends GetxController {
-  List<ExtensionService> runtimes = <ExtensionService>[].obs;
+  List<Extension> extensions = <Extension>[].obs;
   ExtensionType? lastType;
 
   @override
@@ -23,14 +22,14 @@ class ExtensionBrowseController extends GetxController {
   }
 
   void _filterExtData(ExtensionType? type) {
-    runtimes.clear();
-    var filter = ExtensionUtils.runtimes.values
-        .where((element) => element.extension.type == type);
-    runtimes.addAll(filter);
+    extensions.clear();
+    var filter = ExtensionUtils.extensions.values
+        .where((element) => element.type == type);
+    extensions.addAll(filter);
   }
 
   onRefresh() async {
-    runtimes.clear();
-    runtimes.addAll(ExtensionUtils.runtimes.values);
+    extensions.clear();
+    extensions.addAll(ExtensionUtils.extensions.values);
   }
 }

@@ -20,7 +20,6 @@ import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/miru_storage.dart';
 import 'package:miru_app/utils/application.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
-import 'package:path/path.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main(List<String> args) async {

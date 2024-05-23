@@ -29,7 +29,7 @@ class HomePageController extends GetxController {
   }
 
   void _onScroll() {
-    page = pageController.offset!;
+    page = pageController.offset;
     update();
   }
 

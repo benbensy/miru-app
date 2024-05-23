@@ -25,6 +25,7 @@ class ExtensionPage extends GetSaveWidget<ExtensionPageController> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
+            centerTitle: true,
             actions: _appbarAction(context),
             title: Text("common.extension".i18n),
           ),
@@ -57,9 +58,10 @@ class ExtensionPage extends GetSaveWidget<ExtensionPageController> {
     var bro = [
       IconButton(
         onPressed: () {
-          Get.to(
-            () => const SearchPage(),
-          );
+          const SnackBar(content: Text("Global search is temporarily unavailable"));
+          // Get.to(
+          //   () => const SearchPage(),
+          // );
         },
         icon: const Icon(Icons.search),
       ),

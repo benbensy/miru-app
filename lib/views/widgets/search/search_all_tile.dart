@@ -29,7 +29,7 @@ class _SearchAllTileState extends State<SearchAllTile> {
     return Center(
       child: HorizontalList(
         onClickMore: widget.onClickMore,
-        title: widget.searchResult.runitme.extension.name,
+        title: widget.searchResult.extension.name,
         contentBuilder: (controller) {
           if (widget.searchResult.error != null) {
             return Text(widget.searchResult.error!.split('\n').first);
@@ -59,7 +59,7 @@ class _SearchAllTileState extends State<SearchAllTile> {
                     key: ValueKey(data[index].url),
                     title: data[index].title,
                     url: data[index].url,
-                    package: widget.searchResult.runitme.extension.package,
+                    package: widget.searchResult.extension.package,
                     cover: data[index].cover,
                     update: data[index].update,
                   ),
