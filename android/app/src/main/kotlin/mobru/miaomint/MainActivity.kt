@@ -1,4 +1,4 @@
-package miru.miaomint
+package mobru.miaomint
 
 import io.flutter.embedding.android.FlutterActivity
 import android.os.Bundle
