@@ -38,7 +38,9 @@
     "download": "下载",
     "browse": "浏览",
     "more": "更多",
-    "login": "登录"
+    "login": "登录",
+    "next-chapter": "下一章:",
+    "last-chapter": "上一章:"
   },
   "home": {
     "continue-watching": "继续观看",
@@ -138,7 +140,7 @@
     "pure-black-mode": "纯黑模式",
     "pure-black-mode-subtitle": "纯黑暗色主题",
     "update": "更新",
-    "download-manager": "下载管理"
+    "download-manager": "下载管理..."
   },
   "external-player-launching": "正在启动 {player}",
   "detail": {

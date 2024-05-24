@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/base/widget/get_binding_widget.dart';
 import 'package:miru_app/models/extension.dart';
-import 'package:miru_app/views/pages/webview_page.dart';
-import 'package:miru_app/views/widgets/cache_network_image.dart';
+import 'package:miru_app/utils/i18n.dart';
+import 'package:miru_app/views/pages/watch/comic_control_panel_footer.dart';
+import 'package:miru_app/views/pages/watch/comic_control_panel_head.dart';
 import 'package:miru_app/views/widgets/progress.dart';
 import 'package:super_paging/super_paging.dart';
 
@@ -40,71 +41,109 @@ class PreloadComicReader
           extension: extension,
           playList: playList,
           startPage: playerIndex,
+          detailUrl: detailUrl,
         ),
       );
     });
   }
 
+  _buildComicContent() {
+    return Stack(
+      children: [
+        _comicListContent(),
+        Positioned(
+          top: 140,
+          bottom: 140,
+          left: 0,
+          right: 0,
+          child: GestureDetector(
+            onTapDown: (TapDownDetails details) {
+              controller.isShowControlPanel.value =
+                  !controller.isShowControlPanel.value;
+            },
+          ),
+        ),
+        Positioned(
+          child: Obx(
+            () => Visibility(
+              visible: controller.isShowControlPanel.value,
+              child: ComicControlPanelHead(title),
+            ),
+          ),
+        ),
+        Positioned(
+          right: 0,
+          left: 0,
+          bottom: 0,
+          child: Obx(
+            () => Visibility(
+              visible: controller.isShowControlPanel.value,
+              child: const ComicControlPanelFooter(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _comicListContent() {
+    return PagingListView(
+      pager: controller.pager,
+      itemBuilder: (BuildContext context, int index) {
+        final item = controller.pager.items.elementAt(index);
+        if (item.startsWith("[last_chapter]") ||
+            item.startsWith("[next_chapter]")) {
+          var chapter = item
+              .replaceAll("[last_chapter]", "common.last-chapter".i18n)
+              .replaceAll("[next_chapter]", "common.next-chapter".i18n);
+          return Container(
+            width: double.infinity,
+            height: Get.height / 12,
+            color: Colors.black,
+            child: Center(
+              child: Text(
+                chapter,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          );
+        }
+        var c = [Colors.amber, Colors.blue, Colors.deepPurpleAccent];
+        return Container(
+          color: c[index % 2],
+          width: double.infinity,
+          height: 300,
+        );
+        // return CacheNetWorkImagePic(
+        //   item,
+        //   fit: BoxFit.fitWidth,
+        //   placeholder: _buildPlaceholder(context),
+        //   headers: controller.currentMange?.headers,
+        // );
+      },
+      emptyBuilder: (BuildContext context) {
+        return const Center(
+          child: Text('No more'),
+        );
+      },
+      errorBuilder: (BuildContext context, Object? error) {
+        return Center(child: Text('$error'));
+      },
+      loadingBuilder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator.adaptive(),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Get.to(
-                WebViewPage(
-                  extension: extension,
-                  url: detailUrl,
-                ),
-              );
-            },
-            icon: const Icon(Icons.public),
-          ),
-        ],
-      ),
-      body: PagingListView(
-        pager: controller.pager,
-        itemBuilder: (BuildContext context, int index) {
-          final item = controller.pager.items.elementAt(index);
-          if (item.startsWith("[chapter]")) {
-            return Container(
-              width: double.infinity,
-              height: Get.height / 12,
-              color: Colors.black,
-              child: Center(
-                child: Text(
-                  item.replaceAll("[chapter]", ""),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            );
-          }
-          return CacheNetWorkImagePic(
-            item,
-            fit: BoxFit.fitWidth,
-            placeholder: _buildPlaceholder(context),
-            headers: controller.currentMange?.headers,
-          );
-        },
-        emptyBuilder: (BuildContext context) {
-          return const Center(
-            child: Text('No more'),
-          );
-        },
-        errorBuilder: (BuildContext context, Object? error) {
-          return Center(child: Text('$error'));
-        },
-        loadingBuilder: (BuildContext context) {
-          return const Center(
-            child: CircularProgressIndicator.adaptive(),
-          );
-        },
-      ),
+      body: _buildComicContent(),
     );
   }
 

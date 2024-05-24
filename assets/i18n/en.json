@@ -55,7 +55,9 @@
     "update": "Update",
     "download": "Download",
     "browse": "Browse",
-    "more": "More"
+    "more": "More",
+    "next-chapter": "Next chapter:",
+    "last-chapter": "Last chapter:"
   },
   "home": {
     "continue-watching": "Continue",
@@ -157,7 +159,7 @@
     "pure-black-mode": "Pure black mode",
     "pure-black-mode-subtitle": "Pure dark theme",
     "update": "Update",
-    "download-manager": "Download manager"
+    "download-manager": "Download manager..."
   },
   "external-player-launching": "Launching {player}",
   "detail": {

@@ -6,14 +6,19 @@ import 'package:super_paging/super_paging.dart';
 class ComicMortySource extends PagingSource<int, String> {
   var _loadKey = 1;
 
-  ComicMortySource(
-      {required this.extension,
-      required this.playList,
-      required this.mangaWatch,
-      required this.startPage}) {
-    _loadKey = startPage;
+  ComicMortySource({
+    required this.extension,
+    required this.playList,
+    required this.startPage,
+    required this.mangaWatch,
+    required this.pageWatch,
+  }) {
+    if (startPage > 0) {
+      _loadKey = startPage;
+    }
   }
 
+  final ValueChanged<int> pageWatch;
   final ValueChanged<ExtensionMangaWatch> mangaWatch;
   final Extension extension;
   final List<ExtensionEpisode> playList;
@@ -26,11 +31,12 @@ class ComicMortySource extends PagingSource<int, String> {
       var result = await ExtensionHelper(extension).watch(currentPlayUrl)
           as ExtensionMangaWatch;
       var list = [
-        if (_loadKey > 1) "[chapter]下一章: ${playList[_loadKey - 1].name}",
+        if (_loadKey > 1) "[next_chapter] ${playList[_loadKey - 1].name}",
         ...result.urls,
-        "[chapter]上一章: ${playList[_loadKey - 1].name}"
+        "[last_chapter] ${playList[_loadKey - 1].name}"
       ];
       mangaWatch.call(result);
+      pageWatch.call(_loadKey);
       return LoadResult.page(
         nextKey: _loadKey++,
         items: list,

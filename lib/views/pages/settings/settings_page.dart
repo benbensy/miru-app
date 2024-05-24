@@ -106,6 +106,7 @@ class SettingsPage extends GetSaveWidget<SettingsController> {
                         "about Mobru",
                         style: TextStyle(
                           decoration: TextDecoration.underline,
+                          decorationColor: context.primaryColor,
                           color: context.primaryColor,
                           fontSize: 14,
                         ),
