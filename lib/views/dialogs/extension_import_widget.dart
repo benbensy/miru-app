@@ -137,12 +137,19 @@ class ExtensionImportWidget extends StatelessWidget {
             child: Container(
               height: 48,
               width: double.infinity,
-              color: context.primaryColor,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(4),
+                  bottomRight: Radius.circular(4),
+                ),
+                color: context.primaryColor,
+              ),
               child: Center(
                 child: Text(
                   style: TextStyle(
                     color: context.backgroundColor,
                     fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
                   'extension.import.import-by-url'.i18n,
                   textAlign: TextAlign.center,
@@ -150,18 +157,22 @@ class ExtensionImportWidget extends StatelessWidget {
               ),
             ),
             onTap: () async {
+              if (url.isEmpty) return;
               RouterUtils.pop();
               await ExtensionUtils.install(url, context);
             },
           ),
           const SizedBox(
-            height: 1,
+            height: 2,
           ),
           InkWell(
             child: Container(
               width: double.infinity,
               height: 48,
-              color: context.primaryColor,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(4)),
+                color: context.primaryColor,
+              ),
               child: Center(
                 child: Text(
                   'extension.import.import-by-local'.i18n,
@@ -169,6 +180,7 @@ class ExtensionImportWidget extends StatelessWidget {
                   style: TextStyle(
                     color: context.backgroundColor,
                     fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -191,19 +203,26 @@ class ExtensionImportWidget extends StatelessWidget {
             },
           ),
           const SizedBox(
-            height: 1,
+            height: 2,
           ),
           InkWell(
             child: Container(
               height: 48,
               width: double.infinity,
-              color: context.primaryColor,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(4),
+                  topRight: Radius.circular(4),
+                ),
+                color: context.primaryColor,
+              ),
               child: Center(
                 child: Text(
                   'common.cancel'.i18n,
                   style: TextStyle(
                     color: context.backgroundColor,
                     fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
