@@ -15,7 +15,8 @@ class ComicControlPanelHead
   @override
   Widget buildWidget(BuildContext context) {
     return SizedBox(
-      height: Get.statusBarHeight - kToolbarHeight,
+      height:
+          AppBar().preferredSize.height + MediaQuery.of(context).padding.top,
       child: AppBar(
         title: Text(title),
         actions: [
@@ -41,7 +42,10 @@ class ComicControlPanelHead
                     title: title,
                     list: controller.playList.map((e) => e.name).toList(),
                     selectIndex: controller.currentPage,
-                    onChange: (value) {},
+                    onChange: (value) {
+                      controller.jumpPage(value);
+                      Get.back();
+                    },
                   );
                 },
               );

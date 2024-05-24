@@ -14,20 +14,21 @@ class PreloadComicReaderController extends GetxController {
 
   final isShowControlPanel = false.obs;
 
+  late final mortySource = ComicMortySource(
+    extension: extension,
+    playList: playList,
+    mangaWatch: (mange) {
+      currentMange = mange;
+    },
+    pageWatch: (index) {
+      currentPage = index;
+    },
+  );
+
   late final pager = Pager(
-    initialKey: 1,
+    initialKey: startPage,
     config: const PagingConfig(pageSize: 60, prefetchIndex: 4),
-    pagingSourceFactory: () => ComicMortySource(
-      extension: extension,
-      playList: playList,
-      startPage: startPage,
-      mangaWatch: (mange) {
-        currentMange = mange;
-      },
-      pageWatch: (index) {
-        currentPage = index;
-      },
-    ),
+    pagingSourceFactory: () => mortySource,
   );
 
   PreloadComicReaderController({
@@ -36,6 +37,11 @@ class PreloadComicReaderController extends GetxController {
     required this.startPage,
     required this.detailUrl,
   });
+
+  void jumpPage(int page) {
+    mortySource.jumpPage = page;
+    pager.refresh();
+  }
 
   @override
   void onClose() {

@@ -5,6 +5,7 @@ import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/pages/watch/comic_control_panel_footer.dart';
 import 'package:miru_app/views/pages/watch/comic_control_panel_head.dart';
+import 'package:miru_app/views/widgets/cache_network_image.dart';
 import 'package:miru_app/views/widgets/progress.dart';
 import 'package:super_paging/super_paging.dart';
 
@@ -111,18 +112,18 @@ class PreloadComicReader
             ),
           );
         }
-        var c = [Colors.amber, Colors.blue, Colors.deepPurpleAccent];
-        return Container(
-          color: c[index % 2],
-          width: double.infinity,
-          height: 300,
-        );
-        // return CacheNetWorkImagePic(
-        //   item,
-        //   fit: BoxFit.fitWidth,
-        //   placeholder: _buildPlaceholder(context),
-        //   headers: controller.currentMange?.headers,
+        // var c = [Colors.amber, Colors.blue, Colors.deepPurpleAccent];
+        // return Container(
+        //   color: c[index % 2],
+        //   width: double.infinity,
+        //   height: 300,
         // );
+        return CacheNetWorkImagePic(
+          item,
+          fit: BoxFit.fitWidth,
+          placeholder: _buildPlaceholder(context),
+          headers: controller.currentMange?.headers,
+        );
       },
       emptyBuilder: (BuildContext context) {
         return const Center(

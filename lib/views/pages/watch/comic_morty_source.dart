@@ -4,41 +4,41 @@ import 'package:miru_app/models/extension.dart';
 import 'package:super_paging/super_paging.dart';
 
 class ComicMortySource extends PagingSource<int, String> {
-  var _loadKey = 1;
-
   ComicMortySource({
     required this.extension,
     required this.playList,
-    required this.startPage,
     required this.mangaWatch,
     required this.pageWatch,
-  }) {
-    if (startPage > 0) {
-      _loadKey = startPage;
-    }
-  }
+  });
 
   final ValueChanged<int> pageWatch;
   final ValueChanged<ExtensionMangaWatch> mangaWatch;
   final Extension extension;
   final List<ExtensionEpisode> playList;
-  final int startPage;
+  int jumpPage = -1;
 
   @override
   Future<LoadResult<int, String>> load(LoadParams<int> params) async {
     try {
-      var currentPlayUrl = playList[_loadKey].url;
+      var loadKey = params.key ?? 0;
+      if (jumpPage > -1) {
+        loadKey = jumpPage;
+        jumpPage = -1;
+      }
+
+      var currentPlayUrl = playList[loadKey].url;
       var result = await ExtensionHelper(extension).watch(currentPlayUrl)
           as ExtensionMangaWatch;
       var list = [
-        if (_loadKey > 1) "[next_chapter] ${playList[_loadKey - 1].name}",
+        if (loadKey > 0) "[next_chapter] ${playList[loadKey].name}",
         ...result.urls,
-        "[last_chapter] ${playList[_loadKey - 1].name}"
+        "[last_chapter] ${playList[loadKey].name}",
       ];
       mangaWatch.call(result);
-      pageWatch.call(_loadKey);
+      pageWatch.call(loadKey);
       return LoadResult.page(
-        nextKey: _loadKey++,
+        nextKey: ++loadKey,
+        //prevKey: --loadKey,
         items: list,
       );
     } catch (e) {
