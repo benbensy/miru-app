@@ -21,7 +21,7 @@ class TrackingPageController extends GetxController {
     return result;
   }
 
-  saveAnilistToken(String result) {
+  _saveAnilistToken(String result) {
     RegExp tokenRegex = RegExp(r'(?<=access_token=).+(?=&token_type)');
     Match? re = tokenRegex.firstMatch(result);
     if (re != null) {
@@ -45,16 +45,17 @@ class TrackingPageController extends GetxController {
     const loginUrl =
         "https://anilist.co/api/v2/oauth/authorize?client_id=16214&response_type=token";
     if (Platform.isAndroid || Platform.isIOS) {
-      Get.to(
+      final result = await Get.to(
         () => const AnilistWebViewPage(url: loginUrl),
       );
+      _saveAnilistToken(result);
       return;
     }
     final webview = FlutterWindowsWebview();
     webview.launchWebview(loginUrl, WebviewOptions(
       onNavigation: (url) {
         if (url.contains("miru-app")) {
-          saveAnilistToken(url);
+          _saveAnilistToken(url);
           webview.getCookies("https://anilist.co").then((cookies) async {
             for (final cookie in cookies.entries) {
               await webview.setCookie(
