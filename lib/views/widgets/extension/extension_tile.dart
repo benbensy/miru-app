@@ -1,8 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/utils/theme_utils.dart';
@@ -38,7 +35,7 @@ class _ExtensionTileState extends State<ExtensionTile> {
         decoration: BoxDecoration(
           color: context.primaryContainerColor,
           borderRadius: const BorderRadius.all(
-            Radius.circular(20),
+            Radius.circular(16),
           ),
         ),
         child: Container(

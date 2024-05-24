@@ -34,7 +34,7 @@ class _ExtensionTileState extends State<ExtensionBrowseTile> {
         decoration: BoxDecoration(
           color: context.primaryContainerColor,
           borderRadius: const BorderRadius.all(
-            Radius.circular(20),
+            Radius.circular(16),
           ),
         ),
         child: Container(
