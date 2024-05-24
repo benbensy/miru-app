@@ -30,6 +30,7 @@ abstract class GetCommonWidget<T extends GetxController>
   Widget build(BuildContext context) {
     return GetBuilder<T>(
       id: updateId,
+      init: controller,
       initState: (state) {
         initState(state);
       },
