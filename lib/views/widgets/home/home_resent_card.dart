@@ -46,7 +46,7 @@ class _HomeRecentCardState extends State<HomeRecentCard> {
 
   @override
   void initState() {
-    _getUpdate();
+    //_getUpdate();
 
     if (widget.history.type != ExtensionType.bangumi) {
       _genColor();
