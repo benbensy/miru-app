@@ -8,7 +8,12 @@ class MiruDirectory {
   static late final Directory _cacheDir;
 
   static ensureInitialized() async {
-    _appDocDir = await getApplicationDocumentsDirectory();
+    if (Platform.isLinux) {
+      _appDocDir = Directory.fromUri(
+          Uri.parse("${Platform.environment['HOME']}/.config"));
+    } else {
+      _appDocDir = await getApplicationDocumentsDirectory();
+    }
     _cacheDir = await getTemporaryDirectory();
   }
 
