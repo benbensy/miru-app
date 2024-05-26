@@ -40,6 +40,21 @@ class AboutPage extends GetBindingWidget<AboutController> {
               "🎉 A versatile application that is free, open-source, and supports extension sources for videos, comics, and novels, available on Android, Windows, and Web platforms.",
             ),
             const SizedBox(height: 20),
+            GestureDetector(
+              onTap: () async {
+                await launchUrl(
+                  Uri.parse(controller.mobruLink),
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: const Text(
+                "Mobru Github",
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Text(
               'settings.links'.i18n,
             ),

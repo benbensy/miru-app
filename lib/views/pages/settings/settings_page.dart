@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -95,7 +96,7 @@ class SettingsPage extends GetSaveWidget<SettingsController> {
                     style: TextStyle(
                       color: context.primaryColor,
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.normal,
                     ),
                   ),
                   Align(
@@ -103,11 +104,12 @@ class SettingsPage extends GetSaveWidget<SettingsController> {
                     alignment: Alignment.bottomRight,
                     child: InkWell(
                       child: Text(
-                        "about Mobru",
+                        "${"settings.about".i18n} Mobru",
                         style: TextStyle(
                           decoration: TextDecoration.underline,
                           decorationColor: context.primaryColor,
                           color: context.primaryColor,
+                          fontWeight: FontWeight.w400,
                           fontSize: 14,
                         ),
                       ),
@@ -115,7 +117,7 @@ class SettingsPage extends GetSaveWidget<SettingsController> {
                         Get.to(() => const AboutPage());
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -500,9 +502,7 @@ class SettingsPage extends GetSaveWidget<SettingsController> {
         title: 'common.download'.i18n,
         subTitle: 'settings.download-manager'.i18n,
         content: const Column(
-          children: [
-
-          ],
+          children: [],
         ),
       ),
       const SizedBox(height: 10),

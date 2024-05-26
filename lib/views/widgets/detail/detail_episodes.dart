@@ -15,6 +15,7 @@ class DetailEpisodes extends StatefulWidget {
     super.key,
     this.tag,
   });
+
   final String? tag;
 
   @override
@@ -28,98 +29,105 @@ class _DetailEpisodesState extends State<DetailEpisodes> {
   late List<ExtensionEpisodeGroup> episodes = [];
   late String listMode = MiruStorage.getSetting(SettingKey.listMode);
   bool isRevered = false;
+
   Widget _buildMobileEpisodes(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // select 选择框
-        if (episodes.isNotEmpty) ...[
-          Container(
-              margin: const EdgeInsets.only(left: 8, top: 5, right: 8),
-              padding:
-                  const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 5),
-              decoration: BoxDecoration(
-                // 背景颜色为 primaryContainer
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(10),
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8, top: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // select 选择框
+          if (episodes.isNotEmpty) ...[
+            Container(
+                margin: const EdgeInsets.only(left: 8, top: 5, right: 8),
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 5, bottom: 5),
+                decoration: BoxDecoration(
+                  // 背景颜色为 primaryContainer
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(10),
+                  ),
                 ),
-              ),
-              child: DropdownButton<int>(
-                // 内容为 primary 颜色
-                style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                isExpanded: true,
-                underline: const SizedBox(),
-                value: c.selectEpGroup.value,
-                items: dropdownItems,
-                onChanged: (value) {
-                  setState(() {
-                    c.selectEpGroup.value = value!;
-                  });
-                },
-              )),
-          Container(
-            margin: const EdgeInsets.only(left: 16, top: 10),
-            child: Row(children: [
-              Text(
-                FlutterI18n.translate(
-                  context,
-                  'detail.total-episodes',
-                  translationParams: {
-                    'total':
-                        episodes[c.selectEpGroup.value].urls.length.toString(),
-                  },
-                ),
-                style: const TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              Transform.flip(
-                flipY: isRevered,
-                child: IconButton(
-                  onPressed: () {
+                child: DropdownButton<int>(
+                  // 内容为 primary 颜色
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                  isExpanded: true,
+                  underline: const SizedBox(),
+                  value: c.selectEpGroup.value,
+                  items: dropdownItems,
+                  onChanged: (value) {
                     setState(() {
-                      isRevered = !isRevered;
+                      c.selectEpGroup.value = value!;
                     });
                   },
-                  icon: const Icon(Icons.sort_rounded),
+                )),
+            Container(
+              margin: const EdgeInsets.only(left: 16, top: 10),
+              child: Row(children: [
+                Text(
+                  FlutterI18n.translate(
+                    context,
+                    'detail.total-episodes',
+                    translationParams: {
+                      'total': episodes[c.selectEpGroup.value]
+                          .urls
+                          .length
+                          .toString(),
+                    },
+                  ),
+                  style: const TextStyle(
+                    fontSize: 18,
+                  ),
                 ),
-              )
-            ]),
+                Transform.flip(
+                  flipY: isRevered,
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isRevered = !isRevered;
+                      });
+                    },
+                    icon: const Icon(Icons.sort_rounded),
+                  ),
+                )
+              ]),
+            )
+          ],
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(0),
+              itemCount: episodes.isEmpty
+                  ? 0
+                  : episodes[c.selectEpGroup.value].urls.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: isRevered
+                      ? Text(episodes[c.selectEpGroup.value]
+                          .urls[episodes[c.selectEpGroup.value].urls.length -
+                              1 -
+                              index]
+                          .name)
+                      : Text(episodes[c.selectEpGroup.value].urls[index].name),
+                  onTap: () {
+                    c.goWatch(
+                      context,
+                      episodes[c.selectEpGroup.value].urls,
+                      isRevered
+                          ? episodes[c.selectEpGroup.value].urls.length -
+                              1 -
+                              index
+                          : index,
+                      c.selectEpGroup.value,
+                    );
+                  },
+                );
+              },
+            ),
           )
         ],
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(0),
-            itemCount: episodes.isEmpty
-                ? 0
-                : episodes[c.selectEpGroup.value].urls.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: isRevered
-                    ? Text(episodes[c.selectEpGroup.value]
-                        .urls[episodes[c.selectEpGroup.value].urls.length -
-                            1 -
-                            index]
-                        .name)
-                    : Text(episodes[c.selectEpGroup.value].urls[index].name),
-                onTap: () {
-                  c.goWatch(
-                    context,
-                    episodes[c.selectEpGroup.value].urls,
-                    isRevered
-                        ? episodes[c.selectEpGroup.value].urls.length -
-                            1 -
-                            index
-                        : index,
-                    c.selectEpGroup.value,
-                  );
-                },
-              );
-            },
-          ),
-        )
-      ],
+      ),
     );
   }
 

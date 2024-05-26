@@ -74,7 +74,7 @@ class DetailOverView extends StatelessWidget {
             }),
             Obx(
               () => SelectableText(
-                c.tmdbDetail?.overview ?? c.detail?.desc ?? '',
+                c.tmdbDetail?.overview?.trim() ?? c.detail?.desc?.trim() ?? '',
                 style: const TextStyle(
                   height: 2,
                 ),
