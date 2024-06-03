@@ -144,7 +144,7 @@ class _DetailPageState extends State<DetailPage> {
                       },
                     )
                   ],
-                  expandedHeight: 380,
+                  expandedHeight: 420,
                 ),
               ];
             },

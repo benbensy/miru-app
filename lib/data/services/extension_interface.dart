@@ -17,5 +17,7 @@ abstract class ExtensionInterface {
 
   Future<Object?> watch(String url);
 
-  Future<String> checkUpdate(url);
+  Future<String> checkUpdate(String url);
+
+  Future<List<String>?> tags(String url);
 }

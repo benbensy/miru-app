@@ -40,7 +40,7 @@ class ExtensionInterfaceWrapper extends ExtensionInterface {
   }
 
   @override
-  Future<String> checkUpdate(url) {
+  Future<String> checkUpdate(String url) {
     return runExtension(() async {
       final jsResult = await runtime.handlePromise(
         await runtime.evaluateAsync(
@@ -157,6 +157,24 @@ class ExtensionInterfaceWrapper extends ExtensionInterface {
         default:
           return ExtensionFikushonWatch.fromJson(data);
       }
+    });
+  }
+
+  @override
+  Future<List<String>?> tags(String url) {
+    return runExtension(() async {
+      final jsResult = await runtime.handlePromise(
+        await runtime.evaluateAsync((Platform.isLinux || Platform.isIOS)
+            ? '${className}Instance.tags("$url")'
+            : 'stringify(()=>${className}Instance.tags("$url"))'),
+      );
+      if (jsResult.isError || jsResult.stringResult == "undefined") {
+        return null;
+      }
+      List<String> result = jsonDecode(jsResult.stringResult).map<String>((e) {
+        return e;
+      }).toList();
+      return result;
     });
   }
 }

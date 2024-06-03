@@ -147,6 +147,10 @@ class Extension {
     throw new Error("not implement watch");
   }
 
+  tags(url) {
+    throw new Error("not implement watch");
+  }
+
   checkUpdate(url) {
     throw new Error("not implement checkUpdate");
   }

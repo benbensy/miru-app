@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/base/widget/get_save_state_widget.dart';
@@ -100,7 +98,7 @@ class SettingsPage extends GetSaveWidget<SettingsController> {
                     ),
                   ),
                   Align(
-                    heightFactor: 4.5,
+                    heightFactor: 4.2,
                     alignment: Alignment.bottomRight,
                     child: InkWell(
                       child: Text(

@@ -24,6 +24,7 @@ class _DetailAppbarflexibleSpaceState extends State<DetailAppbarflexibleSpace> {
   late DetailPageController c = Get.find(tag: widget.tag);
 
   double _offset = 1;
+
   // static const anlistExtensionMap = <ExtensionType, String>{
   //   ExtensionType.bangumi: "ANIME",
   //   ExtensionType.manga: "MANGA",
@@ -67,7 +68,7 @@ class _DetailAppbarflexibleSpaceState extends State<DetailAppbarflexibleSpace> {
         child: Stack(
           children: [
             SizedBox(
-              height: 400,
+              height: 420,
               width: double.infinity,
               child: c.isLoading.value
                   ? const SizedBox.shrink()
@@ -96,7 +97,7 @@ class _DetailAppbarflexibleSpaceState extends State<DetailAppbarflexibleSpace> {
             ),
             Positioned(
               left: 20,
-              bottom: 105,
+              bottom: 135,
               right: 20,
               child: Row(
                 children: [
@@ -145,7 +146,7 @@ class _DetailAppbarflexibleSpaceState extends State<DetailAppbarflexibleSpace> {
               top: null,
               left: 20,
               right: 20,
-              bottom: 40,
+              bottom: 70,
               child: Row(
                 children: [
                   Expanded(
@@ -164,9 +165,26 @@ class _DetailAppbarflexibleSpaceState extends State<DetailAppbarflexibleSpace> {
                 ],
               ),
             ),
+            Positioned(
+              top: null,
+              left: 20,
+              right: 20,
+              bottom: 8,
+              child: Wrap(
+                spacing: 8,
+                children: _buildTags(),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _buildTags() {
+    return [
+      const Chip(label: Text("热血")),
+      const Chip(label: Text("灵异")),
+    ];
   }
 }

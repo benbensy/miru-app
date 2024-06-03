@@ -55,4 +55,10 @@ class ExtensionHelper extends ExtensionInterface {
     await _initWrapperRuntime();
     return wrapper!.watch(url);
   }
+
+  @override
+  Future<List<String>?> tags(String url) async {
+    await _initWrapperRuntime();
+    return wrapper!.tags(url);
+  }
 }
