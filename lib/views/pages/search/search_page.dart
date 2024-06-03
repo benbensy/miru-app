@@ -1,9 +1,11 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/controllers/search_controller.dart';
 import 'package:miru_app/views/pages/search/extension_searcher_page.dart';
+import 'package:miru_app/views/widgets/gaps.dart';
 import 'package:miru_app/views/widgets/search/search_all_extension.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/i18n.dart';
@@ -54,20 +56,6 @@ class _SearchPageState extends State<SearchPage> {
           },
           hintText: "search.hint-text".i18n,
           title: "",
-          flexibleSpace: Obx(
-            () => Column(
-              children: [
-                if (c.finishCount != c.searchResultList.length)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: LinearProgressIndicator(
-                      value: (c.finishCount / c.searchResultList.length),
-                      minHeight: 2,
-                    ),
-                  ),
-              ],
-            ),
-          ),
           bottom: TabBar(
             tabs: [
               Tab(text: 'search.all'.i18n),
@@ -95,24 +83,43 @@ class _SearchPageState extends State<SearchPage> {
         ),
         body: Obx(
           () {
-            // ignore: invalid_use_of_protected_member
-            final list = c.searchResultList.value;
-            return SearchAllExtSearch(
-              key: ValueKey(
-                c.search.value + c.cuurentExtensionType.value.toString(),
-              ),
-              kw: c.search.value,
-              runtimeList: list,
-              onClickMore: (index) {
-                Get.to(ExtensionSearcherPage(
-                  package: c.getPackgeByIndex(index),
-                  keyWord: c.search.value,
-                ));
-              },
+            return Column(
+              children: [
+                Gaps.vGap8,
+                if (c.finishCount != c.searchResultList.length)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: LinearProgressIndicator(
+                      value: (c.finishCount / c.searchResultList.length),
+                      minHeight: 2,
+                    ),
+                  ),
+                Gaps.vGap8,
+                Expanded(
+                  child: _searchListView(),
+                ),
+              ],
             );
           },
         ),
       ),
+    );
+  }
+
+  Widget _searchListView() {
+    final list = c.searchResultList;
+    return SearchAllExtSearch(
+      key: ValueKey(
+        c.search.value + c.cuurentExtensionType.value.toString(),
+      ),
+      kw: c.search.value,
+      runtimeList: list,
+      onClickMore: (index) {
+        Get.to(ExtensionSearcherPage(
+          package: c.getPackgeByIndex(index),
+          keyWord: c.search.value,
+        ));
+      },
     );
   }
 

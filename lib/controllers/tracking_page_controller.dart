@@ -48,7 +48,9 @@ class TrackingPageController extends GetxController {
       final result = await Get.to(
         () => const AnilistWebViewPage(url: loginUrl),
       );
-      _saveAnilistToken(result);
+      if (result != null) {
+        _saveAnilistToken(result);
+      }
       return;
     }
     final webview = FlutterWindowsWebview();
