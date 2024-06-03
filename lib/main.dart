@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:miru_app/controllers/application_controller.dart';
+import 'package:miru_app/data/services/js_runtime.dart';
 import 'package:miru_app/utils/log.dart';
 import 'package:miru_app/utils/miru_directory.dart';
 import 'package:miru_app/utils/request.dart';
@@ -54,6 +55,7 @@ void main(List<String> args) async {
     await MiruRequest.ensureInitialized();
     ExtensionUtils.ensureInitialized();
     MediaKit.ensureInitialized();
+    JsRuntime.ensureInitialized();
 
     if (!Platform.isAndroid && !Platform.isIOS) {
       await windowManager.ensureInitialized();

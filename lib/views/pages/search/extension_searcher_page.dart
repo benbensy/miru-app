@@ -24,6 +24,7 @@ class ExtensionSearcherPage extends StatefulWidget {
     required this.package,
     this.keyWord,
   });
+
   final String package;
   final String? keyWord;
 
@@ -40,10 +41,12 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
   bool _isLoading = true;
   final EasyRefreshController _easyRefreshController = EasyRefreshController();
   Map<String, ExtensionFilter>? _filters;
+
   // 初始化一开始选择的选项
   Map<String, List<String>> _selectedFilters = {};
 
   late final _textEditingController = TextEditingController(text: _keyWord);
+  late ExtensionHelper extensionHelper = ExtensionHelper(_extension);
 
   @override
   void initState() {
@@ -60,8 +63,10 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
   }
 
   _initFilters() async {
-    _filters = await ExtensionHelper(_extension).createFilter();
-    _filters!.forEach((key, value) {
+    var f = await extensionHelper.createFilter();
+    if (f == null) return;
+    _filters = f;
+    _filters?.forEach((key, value) {
       _selectedFilters[key] = [value.defaultOption];
     });
     setState(() {});
@@ -77,14 +82,14 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
   Future<void> _onLoad() async {
     try {
-      var extensionHelper = ExtensionHelper(_extension);
       _isLoading = true;
       setState(() {});
       late List<ExtensionListItem> data;
       if (_keyWord.isEmpty && _filters == null) {
         data = await extensionHelper.latest(_page);
       } else {
-        data = await extensionHelper.search(_keyWord, _page, filter: _selectedFilters);
+        data = await extensionHelper.search(_keyWord, _page,
+            filter: _selectedFilters);
       }
       if (data.isEmpty && mounted) {
         showPlatformSnackbar(
@@ -121,14 +126,14 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
   }
 
   _onFilter(BuildContext context) {
-    final fiterWidget = _ExtensionFilterWidget(
-      extension: _extension,
+    final filterWidget = _ExtensionFilterWidget(
       filters: _filters!,
       selectedFilters: _selectedFilters,
       onSelectFilter: (selectedFilters, filters) {
         _selectedFilters = selectedFilters;
         _filters = filters;
       },
+      extensionHelper: extensionHelper,
     );
 
     if (Platform.isAndroid || Platform.isIOS) {
@@ -170,7 +175,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
                 right: 16,
                 top: 16,
               ),
-              child: fiterWidget,
+              child: filterWidget,
             ))
           ],
         ),
@@ -183,7 +188,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
       builder: (context) {
         return fluent.ContentDialog(
           title: Text('search.filter'.i18n),
-          content: fiterWidget,
+          content: filterWidget,
           actions: [
             fluent.Button(
               child: Text('common.cancel'.i18n),
@@ -380,26 +385,27 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
 class _ExtensionFilterWidget extends StatefulWidget {
   const _ExtensionFilterWidget({
-    required this.extension,
     required this.selectedFilters,
     required this.onSelectFilter,
     required this.filters,
+    required this.extensionHelper,
   });
-  final Extension extension;
+
   final Map<String, ExtensionFilter> filters;
   final Map<String, List<String>> selectedFilters;
   final Function(
     Map<String, List<String>> selectedFilters,
     Map<String, ExtensionFilter> filters,
   ) onSelectFilter;
+  final ExtensionHelper? extensionHelper;
 
   @override
   State<_ExtensionFilterWidget> createState() => _ExtensionFilterWidgetState();
 }
 
 class _ExtensionFilterWidgetState extends State<_ExtensionFilterWidget> {
-  late final Extension _extension = widget.extension;
   late Map<String, ExtensionFilter> _filters = widget.filters;
+
   // 初始化一开始选择的选项
   late Map<String, List<String>> _selectedFilters = widget.selectedFilters;
 
@@ -416,9 +422,11 @@ class _ExtensionFilterWidgetState extends State<_ExtensionFilterWidget> {
       }
       selectedFilters[key]!.add(value);
     }
+    var f = await widget.extensionHelper?.createFilter(filter: selectedFilters);
+    if (f == null) return;
     // 再请求一次 _filters
     final filters = Map<String, ExtensionFilter>.from(
-      await ExtensionHelper(_extension).createFilter(filter: selectedFilters),
+      f,
     );
 
     // 剔除 _filters 中不能存在的选项
