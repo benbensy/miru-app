@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/controllers/extension/extension_repo_controller.dart';
+import 'package:miru_app/views/dialogs/filter_extension_dialog.dart';
 import 'package:miru_app/views/widgets/extension/extension_card.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/widgets/button.dart';
@@ -25,58 +26,6 @@ class _ExtensionRepoPageState extends State<ExtensionRepoPage> {
   void initState() {
     c = Get.put(ExtensionRepoPageController());
     super.initState();
-  }
-
-  // 筛选 dialog
-  _filterDialog() {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      useSafeArea: true,
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: Obx(
-                  () => SegmentedButton<ExtensionType?>(
-                    segments: [
-                      ButtonSegment(
-                        value: null,
-                        label: Text('common.show-all'.i18n),
-                      ),
-                      ButtonSegment(
-                        value: ExtensionType.bangumi,
-                        label: Text('extension-type.video'.i18n),
-                      ),
-                      ButtonSegment(
-                        value: ExtensionType.manga,
-                        label: Text('extension-type.comic'.i18n),
-                      ),
-                      ButtonSegment(
-                        value: ExtensionType.fikushon,
-                        label: Text('extension-type.novel'.i18n),
-                      ),
-                    ],
-                    selected: <ExtensionType?>{c.searchType.value},
-                    onSelectionChanged: (value) {
-                      debugPrint(value.first.toString());
-                      c.searchType.value = value.first;
-                      Get.back();
-                    },
-                    showSelectedIcon: false,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Widget _content() {
@@ -137,7 +86,7 @@ class _ExtensionRepoPageState extends State<ExtensionRepoPage> {
     }
 
     return PlatformBuildWidget(
-      androidBuilder: (context) => ListView(
+      mobileBuilder: (context) => ListView(
         children: extensionCards,
       ),
       desktopBuilder: (context) => LayoutBuilder(
@@ -153,7 +102,7 @@ class _ExtensionRepoPageState extends State<ExtensionRepoPage> {
     );
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Obx(
       () => Scaffold(
         appBar: SearchAppBar(
@@ -166,7 +115,13 @@ class _ExtensionRepoPageState extends State<ExtensionRepoPage> {
             IconButton(
               icon: const Icon(Icons.filter_list),
               onPressed: () {
-                _filterDialog();
+                FilterExtensionDialog.show(
+                  context,
+                  c.searchType.value,
+                  (type) {
+                    c.searchType.value = type;
+                  },
+                );
               },
             ),
           ],
@@ -271,7 +226,7 @@ class _ExtensionRepoPageState extends State<ExtensionRepoPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }

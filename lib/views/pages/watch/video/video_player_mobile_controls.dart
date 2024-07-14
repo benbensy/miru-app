@@ -382,7 +382,7 @@ class _VideoPlayerMobileControlsState extends State<VideoPlayerMobileControls> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (_c.runtime.extension.icon != null)
+                          if (_c.extension.icon != null)
                             Container(
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
@@ -390,7 +390,7 @@ class _VideoPlayerMobileControlsState extends State<VideoPlayerMobileControls> {
                               clipBehavior: Clip.antiAlias,
                               margin: const EdgeInsets.only(right: 10),
                               child: CacheNetWorkImagePic(
-                                _c.runtime.extension.icon!,
+                                _c.extension.icon!,
                                 width: 30,
                                 height: 30,
                               ),
@@ -400,7 +400,7 @@ class _VideoPlayerMobileControlsState extends State<VideoPlayerMobileControls> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _c.runtime.extension.name,
+                                _c.extension.name,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

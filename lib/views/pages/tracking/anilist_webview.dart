@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
@@ -7,6 +9,7 @@ class AnilistWebViewPage extends StatefulWidget {
     super.key,
     required this.url,
   });
+
   final String url;
 
   @override
@@ -32,10 +35,20 @@ class _AnilistWebViewPageState extends State<AnilistWebViewPage> {
         initialUrlRequest: URLRequest(
           url: WebUri(widget.url),
         ),
+        onLoadStop: (controller, url) async {
+          if (Platform.isIOS) {
+            if (url != null && url.toString().contains("access_token")) {
+              debugPrint(url.host);
+              Get.back(result: url.toString());
+            }
+          }
+        },
         onLoadStart: (controller, url) async {
-          if (url != null && url.toString().contains("access_token")) {
-            debugPrint(url.host);
-            Get.back(result: url.toString());
+          if (Platform.isAndroid) {
+            if (url != null && url.toString().contains("access_token")) {
+              debugPrint(url.host);
+              Get.back(result: url.toString());
+            }
           }
         },
       ),

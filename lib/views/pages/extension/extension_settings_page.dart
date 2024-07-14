@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:get/get.dart';
+import 'package:miru_app/data/services/cookie_utils.dart';
 import 'package:miru_app/models/extension_setting.dart';
 import 'package:miru_app/views/pages/code_edit_page.dart';
 import 'package:miru_app/controllers/extension/extension_settings_controller.dart';
+import 'package:miru_app/views/pages/webview_page.dart';
 import 'package:miru_app/views/widgets/extension/info_card.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/data/services/database_service.dart';
@@ -28,6 +30,7 @@ class ExtensionSettingsPage extends StatefulWidget {
     super.key,
     required this.package,
   });
+
   final String package;
 
   @override
@@ -67,7 +70,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
               value,
             );
             setting.value = value;
-            if (Platform.isAndroid) {
+            if (Platform.isAndroid || Platform.isIOS) {
               // 如果是安卓，需要触发一下更新
               setState(() {});
             }
@@ -76,7 +79,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
             return setting.value ?? setting.defaultValue;
           },
           buildSubtitle: () {
-            if (Platform.isAndroid) {
+            if (Platform.isAndroid || Platform.isIOS) {
               return '${setting.value ?? setting.defaultValue}\n${setting.description ?? ''}';
             }
             return setting.description ?? '';
@@ -130,12 +133,12 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
 
   Widget _buildAndroid(BuildContext context) {
     return Obx(() {
-      if (c.runtime.value == null) {
+      if (c.extension.value == null) {
         return const Center(
           child: ProgressRing(),
         );
       }
-      final extension = c.runtime.value!.extension;
+      final extension = c.extension.value!;
 
       final content = SingleChildScrollView(
         child: Column(
@@ -143,8 +146,8 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
             const SizedBox(height: 30),
             Center(
               child: Container(
-                height: 100,
-                width: 100,
+                height: 60,
+                width: 60,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -164,7 +167,25 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
               extension.package,
               style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 8),
+            InkResponse(
+              child: Text(
+                extension.webSite,
+                style: const TextStyle(
+                  fontSize: 14,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+              onTap: () {
+                Get.to(
+                  WebViewPage(
+                    //extensionRuntime: c.runtime.value!,
+                    url: extension.webSite,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Wrap(
@@ -188,11 +209,6 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
                     icon: Icons.description,
                     title: 'extension-info.license'.i18n,
                     content: extension.license,
-                  ),
-                  InfoCard(
-                    icon: Icons.link,
-                    title: 'extension-info.original-site'.i18n,
-                    content: extension.webSite,
                   ),
                 ],
               ),
@@ -231,7 +247,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
                 trailing: TextButton(
                   child: Text('cookie-clean.clean'.i18n),
                   onPressed: () {
-                    c.runtime.value!.cleanCookie();
+                    cleanCookie(extension);
                     showPlatformSnackbar(
                       context: context,
                       content: 'cookie-clean.success'.i18n,
@@ -265,7 +281,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
                             trailing: TextButton(
                               child: Text('cookie-clean.clean'.i18n),
                               onPressed: () {
-                                c.runtime.value!.cleanCookie();
+                                cleanCookie(extension);
                                 showPlatformSnackbar(
                                   context: context,
                                   content: 'cookie-clean.success'.i18n,
@@ -287,13 +303,13 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
 
   Widget _buildDesktop(BuildContext context) {
     return Obx(() {
-      if (c.runtime.value == null) {
+      if (c.extension.value == null) {
         return const Center(
           child: ProgressRing(),
         );
       }
 
-      final extension = c.runtime.value!.extension;
+      final extension = c.extension.value!;
       return Padding(
         padding: const EdgeInsets.all(16),
         child: LayoutBuilder(builder: ((context, constraints) {
@@ -421,7 +437,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
                           trailing: fluent.FilledButton(
                             child: Text('cookie-clean.clean'.i18n),
                             onPressed: () {
-                              c.runtime.value!.cleanCookie();
+                              cleanCookie(extension);
                               showPlatformSnackbar(
                                 context: context,
                                 content: 'cookie-clean.success'.i18n,
@@ -448,7 +464,7 @@ class _ExtensionSettingsPageState extends State<ExtensionSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildAndroid,
       desktopBuilder: _buildDesktop,
     );
   }

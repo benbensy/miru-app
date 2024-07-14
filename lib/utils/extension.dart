@@ -5,11 +5,12 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:miru_app/controllers/extension/extension_browse_controller.dart';
+import 'package:miru_app/controllers/extension/extension_manager_controller.dart';
 import 'package:miru_app/models/extension.dart';
-import 'package:miru_app/controllers/extension/extension_controller.dart';
+import 'package:miru_app/controllers/extension/extension_page_controller.dart';
 import 'package:miru_app/controllers/search_controller.dart';
 import 'package:miru_app/controllers/settings_controller.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/miru_directory.dart';
 import 'package:miru_app/utils/request.dart';
@@ -19,7 +20,7 @@ import 'package:miru_app/views/widgets/messenger.dart';
 import 'package:path/path.dart' as path;
 
 class ExtensionUtils {
-  static Map<String, ExtensionService> runtimes = {};
+  static Map<String, Extension> extensions = {};
   static Map<String, String> extensionErrorMap = {};
 
   static String get extensionsDir => path.join(
@@ -32,24 +33,26 @@ class ExtensionUtils {
     // 创建目录
     Directory(extensionsDir).createSync(recursive: true);
     await _loadExtensions();
-    // 监听目录变化
-    Directory(extensionsDir).watch().listen((event) async {
-      if (path.extension(event.path) == '.js') {
-        final package = path.basenameWithoutExtension(event.path);
-        debugPrint('extension event: ${event.path} ${event.type}');
-        runtimes.remove(package);
-        extensionErrorMap.remove(event.path);
-        switch (event.type) {
-          case FileSystemEvent.delete:
-            break;
-          case FileSystemEvent.create:
-          case FileSystemEvent.modify:
-            await installByPath(event.path);
-            break;
+    if (!Platform.isIOS && !Platform.isMacOS) {
+      // 监听目录变化
+      Directory(extensionsDir).watch().listen((event) async {
+        if (path.extension(event.path) == '.js') {
+          final package = path.basenameWithoutExtension(event.path);
+          debugPrint('extension event: ${event.path} ${event.type}');
+          extensions.remove(package);
+          extensionErrorMap.remove(event.path);
+          switch (event.type) {
+            case FileSystemEvent.delete:
+              break;
+            case FileSystemEvent.create:
+            case FileSystemEvent.modify:
+              await installByPath(event.path);
+              break;
+          }
+          _reloadPage();
         }
-        _reloadPage();
-      }
-    });
+      });
+    }
   }
 
   static _loadExtensions() async {
@@ -67,6 +70,12 @@ class ExtensionUtils {
     final file = File(path.join(extensionsDir, '$package.js'));
     if (file.existsSync()) {
       file.deleteSync();
+      if (Platform.isIOS || Platform.isMacOS) {
+        final package = path.basenameWithoutExtension(file.path);
+        extensions.remove(package);
+        extensionErrorMap.remove(file.path);
+        _reloadPage();
+      }
     }
   }
 
@@ -108,7 +117,7 @@ class ExtensionUtils {
       final savePath = path.join(extensionsDir, '${ext.package}.js');
       // 保存文件
       File(savePath).writeAsStringSync(script);
-      runtimes[ext.package] = await ExtensionService().initRuntime(ext);
+      extensions[ext.package] = ext;
       _reloadPage();
     } catch (e) {
       if (context.mounted) {
@@ -140,7 +149,7 @@ class ExtensionUtils {
         if (path.basenameWithoutExtension(p) != ext.package) {
           throw Exception("Inconsistency between file name and package name");
         }
-        runtimes[ext.package] = await ExtensionService().initRuntime(ext);
+        extensions[ext.package] = ext;
       } catch (e) {
         extensionErrorMap[p] = e.toString();
       }
@@ -150,7 +159,10 @@ class ExtensionUtils {
   static _reloadPage() {
     // 重载扩展页面
     if (Get.isRegistered<ExtensionPageController>()) {
-      Get.find<ExtensionPageController>().callRefresh();
+      Get.find<ExtensionManagerController>().callRefresh();
+    }
+    if (Get.isRegistered<ExtensionBrowseController>()) {
+      Get.find<ExtensionBrowseController>().onRefresh();
     }
     // 重载搜索页面
     if (Get.isRegistered<SearchPageController>()) {

@@ -5,14 +5,18 @@ import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
+import 'package:miru_app/base/widget/get_save_state_widget.dart';
 import 'package:miru_app/data/providers/tmdb_provider.dart';
 import 'package:miru_app/controllers/application_controller.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/log.dart';
 import 'package:miru_app/utils/request.dart';
+import 'package:miru_app/utils/theme_utils.dart';
 import 'package:miru_app/views/dialogs/bt_dialog.dart';
 import 'package:miru_app/controllers/extension/extension_repo_controller.dart';
 import 'package:miru_app/controllers/settings_controller.dart';
+import 'package:miru_app/views/pages/about/about_page.dart';
+import 'package:miru_app/views/pages/settings/settings_accent_color_widget.dart';
 import 'package:miru_app/views/pages/tracking/anilist_tracking_page.dart';
 import 'package:miru_app/views/widgets/settings/settings_expander_tile.dart';
 import 'package:miru_app/views/widgets/settings/settings_input_tile.dart';
@@ -27,33 +31,97 @@ import 'package:miru_app/views/widgets/list_title.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tmdb_api/tmdb_api.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends GetSaveWidget<SettingsController> {
   const SettingsPage({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
-  late SettingsController c;
-
-  @override
-  void initState() {
-    c = Get.put(SettingsController());
-    super.initState();
+  Bindings? binding() {
+    return BindingsBuilder(() {
+      Get.lazyPut(() => SettingsController());
+    });
   }
 
-  List<Widget> _buildContent() {
+  @override
+  Widget build(BuildContext context) {
+    return PlatformBuildWidget(
+      mobileBuilder: _buildMobile,
+      desktopBuilder: (context) => ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+        children: _buildContent(context),
+      ),
+    );
+  }
+
+  List<Widget> _buildContent(BuildContext context) {
     return [
-      if (!Platform.isAndroid) ...[
+      if (!Platform.isAndroid && !Platform.isIOS) ...[
         Text(
           'common.settings'.i18n,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
       ],
+      Container(
+        height: 180,
+        margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/image/settings_head.png',
+              fit: BoxFit.fill,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Mobru",
+                    style: TextStyle(
+                      color: context.primaryColor,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "Version: 1.0.0",
+                    style: TextStyle(
+                      color: context.primaryColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Align(
+                    heightFactor: 4.2,
+                    alignment: Alignment.bottomRight,
+                    child: InkWell(
+                      child: Text(
+                        "${"settings.about".i18n} Mobru",
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          decorationColor: context.primaryColor,
+                          color: context.primaryColor,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                        ),
+                      ),
+                      onTap: () {
+                        Get.to(() => const AboutPage());
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
       // 常规设置
       SettingsExpanderTile(
         icon: fluent.FluentIcons.developer_tools,
@@ -62,52 +130,16 @@ class _SettingsPageState extends State<SettingsPage> {
         subTitle: 'settings.general-subtitle'.i18n,
         content: Column(
           children: [
-            // TMDB KEY 设置
-            SettingsIntpuTile(
-              title: 'settings.tmdb-key'.i18n,
-              buildSubtitle: () {
-                if (!Platform.isAndroid) {
-                  return 'settings.tmdb-key-subtitle'.i18n;
-                }
-                final key =
-                    MiruStorage.getSetting(SettingKey.tmdbKey) as String;
-                if (key.isEmpty) {
-                  return 'common.unset'.i18n;
-                }
-                // 替换为*号
-                return key.replaceAll(RegExp(r"."), '*');
-              },
-              onChanged: (value) {
-                MiruStorage.setSetting(SettingKey.tmdbKey, value);
-                TmdbApi.tmdb = TMDB(
-                  ApiKeys(value, ''),
-                  defaultLanguage: MiruStorage.getSetting(SettingKey.language),
-                );
-              },
-              buildText: () {
-                return MiruStorage.getSetting(SettingKey.tmdbKey);
-              },
-            ),
             // 语言设置
             SettingsRadiosTile(
               title: 'settings.language'.i18n,
-              itemNameValue: {
-                'languages.be'.i18n: 'be',
-                'languages.en'.i18n: 'en',
-                'languages.es'.i18n: 'es',
-                'languages.fr'.i18n: 'fr',
-                'languages.hu'.i18n: 'hu',
-                'languages.hi'.i18n: 'hi',
-                'languages.id'.i18n: 'id',
-                'languages.ja'.i18n: 'ja',
-                'languages.pl'.i18n: 'pl',
-                'languages.ru'.i18n: 'ru',
-                'languages.ryu'.i18n: 'ryu',
-                'languages.uk'.i18n: 'uk',
-                'languages.zh'.i18n: 'zh',
-                'languages.zhHant'.i18n: 'zhHant',
+              itemNameValue: controller.lang,
+              buildSubtitle: () {
+                var saveLang = MiruStorage.getSetting(SettingKey.language);
+                var find = controller.lang.entries
+                    .firstWhere((element) => element.value == saveLang);
+                return find.key;
               },
-              buildSubtitle: () => 'settings.language-subtitle'.i18n,
               applyValue: (value) {
                 MiruStorage.setSetting(SettingKey.language, value);
                 I18nUtils.changeLanguage(value);
@@ -125,17 +157,47 @@ class _SettingsPageState extends State<SettingsPage> {
                   'settings.theme-light'.i18n: 'light',
                   'settings.theme-dark'.i18n: 'dark',
                 };
-                if (Platform.isAndroid) {
-                  map['settings.theme-black'.i18n] = 'black';
-                }
                 return map;
               }(),
-              buildSubtitle: () => 'settings.theme-subtitle'.i18n,
+              buildSubtitle: () {
+                var theme = MiruStorage.getSetting(SettingKey.theme);
+                switch (theme) {
+                  case "light":
+                    return 'settings.theme-light'.i18n;
+                  case "black":
+                  case "dark":
+                    return 'settings.theme-dark'.i18n;
+                  default:
+                    return 'settings.theme-system'.i18n;
+                }
+              },
               applyValue: (value) {
                 Get.find<ApplicationController>().changeTheme(value);
               },
               buildGroupValue: () {
-                return Get.find<ApplicationController>().themeText.value;
+                var theme = Get.find<ApplicationController>().themeText;
+                if (theme == "dark" || theme == "black") {
+                  return "dark";
+                } else {
+                  return "light";
+                }
+              },
+            ),
+            if (Platform.isAndroid || Platform.isIOS)
+              const SettingsAccentColorWidget(),
+            SettingsSwitchTile(
+              title: 'settings.pure-black-mode'.i18n,
+              buildSubtitle: () => 'settings.pure-black-mode-subtitle'.i18n,
+              buildValue: () {
+                var theme = MiruStorage.getSetting(SettingKey.theme);
+                return theme == "black";
+              },
+              onChanged: (value) {
+                if (value) {
+                  Get.find<ApplicationController>().changeTheme("black");
+                } else {
+                  Get.find<ApplicationController>().changeTheme("dark");
+                }
               },
             ),
             // 启动检查更新
@@ -174,7 +236,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsIntpuTile(
               title: 'settings.repo-url'.i18n,
               buildSubtitle: () {
-                if (!Platform.isAndroid) {
+                if (!Platform.isAndroid && !Platform.isIOS) {
                   return 'settings.repo-url-subtitle'.i18n;
                 }
                 return MiruStorage.getSetting(SettingKey.miruRepoUrl);
@@ -205,7 +267,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'settings.bt-server'.i18n,
               buildSubtitle: () => "settings.bt-server-subtitle".i18n,
               trailing: PlatformWidget(
-                androidWidget: TextButton(
+                mobileWidget: TextButton(
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -228,33 +290,21 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsRadiosTile(
               title: 'settings.external-player'.i18n,
               itemNameValue: () {
-                if (Platform.isAndroid) {
-                  return {
-                    "settings.external-player-builtin".i18n: "built-in",
-                    "VLC": "vlc",
-                    "Other": "other",
-                  };
-                }
-                if (Platform.isLinux) {
-                  return {
-                    "settings.external-player-builtin".i18n: "built-in",
-                    "VLC": "vlc",
-                    "mpv": "mpv",
-                  };
-                }
-                return {
-                  "settings.external-player-builtin".i18n: "built-in",
-                  "VLC": "vlc",
-                  "PotPlayer": "potplayer",
-                };
+                return controller.getPlayer();
               }(),
-              buildSubtitle: () => FlutterI18n.translate(
-                context,
-                'settings.external-player-subtitle',
-                translationParams: {
-                  'player': MiruStorage.getSetting(SettingKey.videoPlayer),
-                },
-              ),
+              buildSubtitle: () {
+                var player = controller.getPlayer();
+                var save = MiruStorage.getSetting(SettingKey.videoPlayer);
+                var find = player.entries
+                    .firstWhere((element) => element.value == save);
+                return FlutterI18n.translate(
+                  context,
+                  'settings.external-player-subtitle',
+                  translationParams: {
+                    'player': find.key,
+                  },
+                );
+              },
               applyValue: (value) {
                 MiruStorage.setSetting(SettingKey.videoPlayer, value);
               },
@@ -263,7 +313,7 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
             const SizedBox(height: 10),
-            if (!Platform.isAndroid) ...[
+            if (!Platform.isAndroid && !Platform.isIOS) ...[
               Text("settings.skip-interval".i18n),
               const SizedBox(height: 2),
               Text(
@@ -351,15 +401,14 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsRadiosTile(
               title: 'settings.default-reader-mode'.i18n,
               itemNameValue: () {
-                final map = {
-                  'comic-settings.standard'.i18n: 'standard',
-                  'comic-settings.right-to-left'.i18n: 'rightToLeft',
-                  'comic-settings.web-tonn'.i18n: 'webTonn',
-                };
-                return map;
+                return controller.comic;
               }(),
-              buildSubtitle: () =>
-                  '${MiruStorage.getSetting(SettingKey.readingMode)}'.i18n,
+              buildSubtitle: () {
+                var mode = MiruStorage.getSetting(SettingKey.readingMode);
+                var find = controller.comic.entries
+                    .firstWhere((element) => element.value == mode);
+                return find.key;
+              },
               applyValue: (value) {
                 MiruStorage.setSetting(SettingKey.readingMode, value);
               },
@@ -377,6 +426,32 @@ class _SettingsPageState extends State<SettingsPage> {
         androidIcon: Icons.sync,
         content: Column(
           children: [
+            // TMDB KEY 设置
+            SettingsIntpuTile(
+              title: 'settings.tmdb-key'.i18n,
+              buildSubtitle: () {
+                if (!Platform.isAndroid && !Platform.isIOS) {
+                  return 'settings.tmdb-key-subtitle'.i18n;
+                }
+                final key =
+                    MiruStorage.getSetting(SettingKey.tmdbKey) as String;
+                if (key.isEmpty) {
+                  return 'common.unset'.i18n;
+                }
+                // 替换为*号
+                return key.replaceAll(RegExp(r"."), '*');
+              },
+              onChanged: (value) {
+                MiruStorage.setSetting(SettingKey.tmdbKey, value);
+                TmdbApi.tmdb = TMDB(
+                  ApiKeys(value, ''),
+                  defaultLanguage: MiruStorage.getSetting(SettingKey.language),
+                );
+              },
+              buildText: () {
+                return MiruStorage.getSetting(SettingKey.tmdbKey);
+              },
+            ),
             SettingsSwitchTile(
               title: 'settings.auto-tracking'.i18n,
               buildSubtitle: () => 'settings.auto-tracking-subtitle'.i18n,
@@ -403,7 +478,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'Anilist',
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                if (!Platform.isAndroid) {
+                if (!Platform.isAndroid && !Platform.isIOS) {
                   router.push('/settings/anilist');
                 } else {
                   Get.to(() => const AniListTrackingPage());
@@ -419,6 +494,16 @@ class _SettingsPageState extends State<SettingsPage> {
       // 高级
       ListTitle(title: 'settings.advanced'.i18n),
       const SizedBox(height: 20),
+      SettingsExpanderTile(
+        icon: fluent.FluentIcons.download,
+        androidIcon: Icons.download,
+        title: 'common.download'.i18n,
+        subTitle: 'settings.download-manager'.i18n,
+        content: const Column(
+          children: [],
+        ),
+      ),
+      const SizedBox(height: 10),
       // 网络设置
       SettingsExpanderTile(
         content: Column(
@@ -427,7 +512,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsIntpuTile(
               title: 'settings.network-ua'.i18n,
               buildSubtitle: () {
-                if (!Platform.isAndroid) {
+                if (!Platform.isAndroid && !Platform.isIOS) {
                   return 'settings.network-ua-subtitle'.i18n;
                 }
                 return MiruStorage.getUASetting();
@@ -441,13 +526,14 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             SettingsRadiosTile(
               title: 'settings.proxy-type'.i18n,
-              itemNameValue: {
-                'settings.proxy-type-direct'.i18n: 'DIRECT',
-                'settings.proxy-type-socks5'.i18n: 'SOCKS5',
-                'settings.proxy-type-socks4'.i18n: 'SOCKS4',
-                'settings.proxy-type-http'.i18n: 'PROXY',
+              itemNameValue: controller.net,
+              buildSubtitle: () {
+                var save = MiruStorage.getSetting(SettingKey.proxyType);
+                var find = controller.net.entries
+                    .firstWhere((element) => element.value == save);
+                return find.key;
+                //'settings.proxy-type-subtitle'.i18n
               },
-              buildSubtitle: () => 'settings.proxy-type-subtitle'.i18n,
               applyValue: (value) {
                 MiruStorage.setSetting(SettingKey.proxyType, value);
                 MiruRequest.refreshProxy();
@@ -459,7 +545,14 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 10),
             SettingsIntpuTile(
               title: 'settings.proxy'.i18n,
-              buildSubtitle: () => 'settings.proxy-subtitle'.i18n,
+              buildSubtitle: () {
+                var save = MiruStorage.getSetting(SettingKey.proxy);
+                if (save == '') {
+                  return 'settings.proxy-subtitle'.i18n;
+                } else {
+                  return save;
+                }
+              },
               onChanged: (value) {
                 MiruStorage.setSetting(SettingKey.proxy, value);
                 MiruRequest.refreshProxy();
@@ -500,7 +593,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'settings.export-log'.i18n,
               buildSubtitle: () => 'settings.export-log-subtitle'.i18n,
               trailing: PlatformWidget(
-                androidWidget: TextButton(
+                mobileWidget: TextButton(
                   onPressed: () {
                     Share.shareXFiles([XFile(MiruLog.logFilePath)]);
                   },
@@ -524,11 +617,11 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ),
-      if (!Platform.isAndroid) ...[
+      if (!Platform.isAndroid && !Platform.isIOS) ...[
         const SizedBox(height: 10),
         Obx(
           () {
-            final value = c.extensionLogWindowId.value != -1;
+            final value = controller.extensionLogWindowId.value != -1;
             return SettingsSwitchTile(
               icon: const Icon(
                 fluent.FluentIcons.bug,
@@ -538,7 +631,7 @@ class _SettingsPageState extends State<SettingsPage> {
               buildSubtitle: () => 'settings.extension-log-subtitle'.i18n,
               buildValue: () => value,
               onChanged: (value) {
-                c.toggleExtensionLogWindow(value);
+                controller.toggleExtensionLogWindow(value);
               },
               isCard: true,
             );
@@ -547,12 +640,12 @@ class _SettingsPageState extends State<SettingsPage> {
       ],
       // 关于
       const SizedBox(height: 20),
-      ListTitle(title: 'settings.about'.i18n),
+      ListTitle(title: 'settings.update'.i18n),
       const SizedBox(height: 20),
       SettingsTile(
         isCard: true,
         icon: const PlatformWidget(
-          androidWidget: Icon(Icons.update),
+          mobileWidget: Icon(Icons.update),
           desktopWidget: Icon(fluent.FluentIcons.update_restore, size: 24),
         ),
         title: 'settings.upgrade'.i18n,
@@ -564,7 +657,7 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         ),
         trailing: PlatformWidget(
-          androidWidget: TextButton(
+          mobileWidget: TextButton(
             onPressed: () {
               ApplicationUtils.checkUpdate(
                 context,
@@ -585,110 +678,17 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
       const SizedBox(height: 10),
-      SettingsExpanderTile(
-        leading: const Image(
-          image: AssetImage('assets/icon/logo.png'),
-          width: 24,
-          height: 24,
-        ),
-        title: "Miru",
-        subTitle: "AGPL-3.0 License",
-        open: true,
-        noPage: true,
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SelectableText(
-              "🎉 A versatile application that is free, open-source, and supports extension sources for videos, comics, and novels, available on Android, Windows, and Web platforms.",
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'settings.links'.i18n,
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              children: [
-                for (final link in c.links.entries)
-                  fluent.Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () async {
-                          await launchUrl(
-                            Uri.parse(link.value),
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Text(
-                          link.key,
-                          style: const TextStyle(
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'settings.contributors'.i18n,
-            ),
-            const SizedBox(height: 8),
-            Obx(
-              () => Wrap(
-                children: [
-                  if (c.contributors.isNotEmpty)
-                    for (final contributor in c.contributors)
-                      fluent.Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () async {
-                              await launchUrl(
-                                Uri.parse(contributor['html_url']),
-                                mode: LaunchMode.externalApplication,
-                              );
-                            },
-                            child: Text(
-                              contributor['login'],
-                              style: const TextStyle(
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                ],
-              ),
-            ),
-          ],
-        ),
-      )
     ];
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('common.settings'.i18n),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        children: _buildContent(),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
-      desktopBuilder: (context) => ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-        children: _buildContent(),
+        children: _buildContent(context),
       ),
     );
   }

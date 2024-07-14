@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 
@@ -11,7 +12,7 @@ class HorizontalList extends StatefulWidget {
     this.itemCount,
     this.itemBuilder,
     this.contentBuilder,
-  })  : assert(
+  }) : assert(
           (itemCount != null && itemBuilder != null) || contentBuilder != null,
           "itemCount and itemBuilder or contentBuilder must not be null",
         );
@@ -36,12 +37,15 @@ class _HorizontalListState extends State<HorizontalList> {
     );
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Column(
       children: [
         Row(
           children: [
-            Text(widget.title),
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Text(widget.title),
+            ),
             const Spacer(),
             TextButton(
               onPressed: widget.onClickMore,
@@ -60,9 +64,20 @@ class _HorizontalListState extends State<HorizontalList> {
               controller: _controller,
               itemCount: widget.itemCount,
               itemBuilder: ((context, index) {
+                EdgeInsets pd;
+                if (index == 0) {
+                  pd = const EdgeInsets.only(left: 16, right: 8);
+                } else if (index == widget.itemCount! - 1) {
+                  pd = const EdgeInsets.only(
+                    left: 8,
+                    right: 16,
+                  );
+                } else {
+                  pd = const EdgeInsets.symmetric(horizontal: 8);
+                }
                 return Container(
                   width: 110,
-                  margin: const EdgeInsets.only(right: 16),
+                  margin: pd,
                   child: widget.itemBuilder!(context, index),
                 );
               }),
@@ -128,7 +143,7 @@ class _HorizontalListState extends State<HorizontalList> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }
@@ -136,6 +151,7 @@ class _HorizontalListState extends State<HorizontalList> {
 
 class HorizontalTitle extends StatefulWidget {
   const HorizontalTitle(this.text, {super.key, required this.onClick});
+
   final String text;
   final Function() onClick;
 

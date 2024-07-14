@@ -12,6 +12,7 @@ import 'package:miru_app/utils/application.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/layout.dart';
 import 'package:miru_app/utils/miru_storage.dart';
+import 'package:miru_app/views/pages/update/update_page.dart';
 import 'package:window_manager/window_manager.dart';
 
 class DesktopMainPage extends StatefulWidget {
@@ -188,7 +189,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
 
   final pages = const [
     HomePage(),
-    SearchPage(),
+    UpdatePage(),
     ExtensionPage(),
     SettingsPage(),
   ];
@@ -206,11 +207,12 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
   Widget build(BuildContext context) {
     List<_Destination> destinations = <_Destination>[
       _Destination(Icons.home_outlined, Icons.home, 'common.home'.i18n),
-      _Destination(Icons.search_outlined, Icons.search, 'common.search'.i18n),
+      _Destination(Icons.new_releases_outlined, Icons.new_releases,
+          'common.update'.i18n),
       _Destination(
           Icons.extension_outlined, Icons.extension, 'common.extension'.i18n),
       _Destination(
-          Icons.settings_outlined, Icons.settings, 'common.settings'.i18n),
+          Icons.more_horiz_outlined, Icons.more_horiz_outlined, 'common.more'.i18n),
     ];
     return Obx(
       () => Scaffold(
@@ -244,8 +246,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
                           label: e.label,
                         ))
                     .toList(),
-                labelBehavior:
-                    NavigationDestinationLabelBehavior.onlyShowSelected,
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                 selectedIndex: c.selectedTab.value,
                 onDestinationSelected: c.changeTab,
               ),
@@ -256,6 +257,7 @@ class _AndroidMainPageState extends fluent.State<AndroidMainPage> {
 
 class _Destination {
   const _Destination(this.icon, this.selectedIcon, this.label);
+
   final IconData selectedIcon;
   final IconData icon;
   final String label;

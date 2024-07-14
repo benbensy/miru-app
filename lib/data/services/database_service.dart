@@ -27,11 +27,10 @@ class DatabaseService {
             .urlEqualTo(url)
             .deleteAll();
       } else {
-        final runtime = ExtensionUtils.runtimes[package];
-        if (runtime == null) {
+        final extension = ExtensionUtils.extensions[package];
+        if (extension == null) {
           throw Exception('extension not found');
         }
-        final extension = runtime.extension;
         return db.favorites.put(
           Favorite()
             ..cover = cover

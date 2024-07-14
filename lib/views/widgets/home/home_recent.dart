@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:miru_app/models/history.dart';
 import 'package:miru_app/views/widgets/home/home_resent_card.dart';
 import 'package:miru_app/utils/i18n.dart';
@@ -10,6 +11,7 @@ class HomeRecent extends StatefulWidget {
     super.key,
     required this.data,
   });
+
   final List<History> data;
 
   @override
@@ -26,7 +28,7 @@ class _HomeRecentState extends State<HomeRecent> {
         curve: Curves.ease);
   }
 
-  Widget _buildAndroidHomeRecent(BuildContext context) {
+  Widget _buildMobileHomeRecent(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -37,7 +39,23 @@ class _HomeRecentState extends State<HomeRecent> {
             controller: horizontalController,
             itemCount: widget.data.length,
             itemBuilder: (context, index) {
-              return HomeRecentCard(history: widget.data[index]);
+              EdgeInsets pd;
+              if (index == 0) {
+                pd = const EdgeInsets.only(left: 16, right: 8);
+              } else if (index == widget.data.length - 1) {
+                pd = const EdgeInsets.only(
+                  left: 8,
+                  right: 16,
+                );
+              } else {
+                pd = const EdgeInsets.symmetric(horizontal: 8);
+              }
+              return Padding(
+                padding: pd,
+                child: HomeRecentCard(
+                  history: widget.data[index],
+                ),
+              );
             },
           ),
         ),
@@ -92,7 +110,7 @@ class _HomeRecentState extends State<HomeRecent> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroidHomeRecent,
+      mobileBuilder: _buildMobileHomeRecent,
       desktopBuilder: _buildDesktopHomeRecent,
     );
   }

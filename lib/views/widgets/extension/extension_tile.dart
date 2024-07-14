@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:miru_app/models/extension.dart';
+import 'package:miru_app/utils/theme_utils.dart';
 import 'package:miru_app/views/pages/code_edit_page.dart';
 import 'package:miru_app/views/pages/extension/extension_settings_page.dart';
 import 'package:miru_app/router/router.dart';
@@ -14,6 +15,7 @@ import 'package:path/path.dart' as path;
 
 class ExtensionTile extends StatefulWidget {
   const ExtensionTile(this.extension, {super.key});
+
   final Extension extension;
 
   @override
@@ -24,16 +26,31 @@ class _ExtensionTileState extends State<ExtensionTile> {
   final fluent.FlyoutController moreFlyoutController =
       fluent.FlyoutController();
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return ListTile(
-      leading: SizedBox(
-        width: 35,
-        height: 35,
-        child: CacheNetWorkImagePic(
-          widget.extension.icon ?? '',
-          key: ValueKey(widget.extension.icon),
-          fit: BoxFit.contain,
-          fallback: const Icon(Icons.extension),
+      leading: Container(
+        width: 48,
+        height: 48,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: context.primaryContainerColor,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(16),
+          ),
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: CacheNetWorkImagePic(
+            widget.extension.icon ?? '',
+            key: ValueKey(widget.extension.icon),
+            fit: BoxFit.contain,
+            fallback: const Icon(Icons.extension),
+          ),
         ),
       ),
       title: Text(widget.extension.name),
@@ -44,32 +61,36 @@ class _ExtensionTileState extends State<ExtensionTile> {
       onTap: () {
         Get.to(ExtensionSettingsPage(package: widget.extension.package));
       },
+      contentPadding: const EdgeInsets.only(left: 16),
       trailing: IconButton(
         onPressed: () {
           // 弹出菜单
           showModalBottomSheet(
             context: context,
             builder: (context) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.code),
-                    title: Text('extension.edit-code'.i18n),
-                    onTap: () async {
-                      Get.back();
-                      Get.to(CodeEditPage(extension: widget.extension));
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.delete),
-                    title: Text('common.uninstall'.i18n),
-                    onTap: () {
-                      ExtensionUtils.uninstall(widget.extension.package);
-                      Get.back();
-                    },
-                  ),
-                ],
+              return SafeArea(
+                minimum: const EdgeInsets.only(left: 16, right: 16, top: 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.code),
+                      title: Text('extension.edit-code'.i18n),
+                      onTap: () async {
+                        Get.back();
+                        Get.to(CodeEditPage(extension: widget.extension));
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.delete),
+                      title: Text('common.uninstall'.i18n),
+                      onTap: () {
+                        ExtensionUtils.uninstall(widget.extension.package);
+                        Get.back();
+                      },
+                    ),
+                  ],
+                ),
               );
             },
           );
@@ -194,7 +215,7 @@ class _ExtensionTileState extends State<ExtensionTile> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }

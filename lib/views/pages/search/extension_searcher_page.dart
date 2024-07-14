@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
+import 'package:miru_app/data/services/extension_helper.dart';
 import 'package:miru_app/models/index.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/extension.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/views/widgets/button.dart';
 import 'package:miru_app/views/widgets/extension_item_card.dart';
@@ -18,12 +18,13 @@ import 'package:miru_app/views/widgets/messenger.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 import 'package:miru_app/views/widgets/search_appbar.dart';
 
-class ExtensionSearcherPage extends fluent.StatefulWidget {
+class ExtensionSearcherPage extends StatefulWidget {
   const ExtensionSearcherPage({
     super.key,
     required this.package,
     this.keyWord,
   });
+
   final String package;
   final String? keyWord;
 
@@ -33,17 +34,19 @@ class ExtensionSearcherPage extends fluent.StatefulWidget {
 }
 
 class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
-  late ExtensionService _runtime;
+  late Extension _extension;
   late String _keyWord = widget.keyWord ?? '';
   final List<ExtensionListItem> _data = [];
   int _page = 1;
   bool _isLoading = true;
   final EasyRefreshController _easyRefreshController = EasyRefreshController();
   Map<String, ExtensionFilter>? _filters;
+
   // 初始化一开始选择的选项
   Map<String, List<String>> _selectedFilters = {};
 
   late final _textEditingController = TextEditingController(text: _keyWord);
+  late ExtensionHelper extensionHelper = ExtensionHelper(_extension);
 
   @override
   void initState() {
@@ -60,8 +63,10 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
   }
 
   _initFilters() async {
-    _filters = await _runtime.createFilter();
-    _filters!.forEach((key, value) {
+    var f = await extensionHelper.createFilter();
+    if (f == null) return;
+    _filters = f;
+    _filters?.forEach((key, value) {
       _selectedFilters[key] = [value.defaultOption];
     });
     setState(() {});
@@ -81,9 +86,10 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
       setState(() {});
       late List<ExtensionListItem> data;
       if (_keyWord.isEmpty && _filters == null) {
-        data = await _runtime.latest(_page);
+        data = await extensionHelper.latest(_page);
       } else {
-        data = await _runtime.search(_keyWord, _page, filter: _selectedFilters);
+        data = await extensionHelper.search(_keyWord, _page,
+            filter: _selectedFilters);
       }
       if (data.isEmpty && mounted) {
         showPlatformSnackbar(
@@ -112,7 +118,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
   _onSearch(String keyWord) {
     _keyWord = keyWord;
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       _easyRefreshController.callRefresh();
     } else {
       _onRefresh();
@@ -120,17 +126,17 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
   }
 
   _onFilter(BuildContext context) {
-    final fiterWidget = _ExtensionFilterWidget(
-      runtime: _runtime,
+    final filterWidget = _ExtensionFilterWidget(
       filters: _filters!,
       selectedFilters: _selectedFilters,
       onSelectFilter: (selectedFilters, filters) {
         _selectedFilters = selectedFilters;
         _filters = filters;
       },
+      extensionHelper: extensionHelper,
     );
 
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       showModalBottomSheet(
         context: context,
         builder: (context) => Column(
@@ -169,7 +175,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
                 right: 16,
                 top: 16,
               ),
-              child: fiterWidget,
+              child: filterWidget,
             ))
           ],
         ),
@@ -182,7 +188,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
       builder: (context) {
         return fluent.ContentDialog(
           title: Text('search.filter'.i18n),
-          content: fiterWidget,
+          content: filterWidget,
           actions: [
             fluent.Button(
               child: Text('common.cancel'.i18n),
@@ -203,10 +209,10 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
     );
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return Scaffold(
       appBar: SearchAppBar(
-        title: _runtime.extension.name,
+        title: _extension.name,
         textEditingController: _textEditingController,
         onChanged: (value) {
           if (value.isEmpty) {
@@ -284,7 +290,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  _runtime.extension.name,
+                  _extension.name,
                   style: fluent.FluentTheme.of(context).typography.subtitle,
                 ),
               ),
@@ -351,7 +357,7 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
   @override
   Widget build(BuildContext context) {
-    final runtime = ExtensionUtils.runtimes[widget.package];
+    final extension = ExtensionUtils.extensions[widget.package];
     final extensionMissing = Text(
       FlutterI18n.translate(
         context,
@@ -359,9 +365,9 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
         translationParams: {'package': widget.package},
       ),
     );
-    if (runtime == null) {
+    if (extension == null) {
       return PlatformWidget(
-        androidWidget: Scaffold(
+        mobileWidget: Scaffold(
           body: extensionMissing,
         ),
         desktopWidget: Center(
@@ -369,9 +375,9 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
         ),
       );
     }
-    _runtime = runtime;
+    _extension = extension;
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }
@@ -379,26 +385,27 @@ class _ExtensionSearcherPageState extends fluent.State<ExtensionSearcherPage> {
 
 class _ExtensionFilterWidget extends StatefulWidget {
   const _ExtensionFilterWidget({
-    required this.runtime,
     required this.selectedFilters,
     required this.onSelectFilter,
     required this.filters,
+    required this.extensionHelper,
   });
-  final ExtensionService runtime;
+
   final Map<String, ExtensionFilter> filters;
   final Map<String, List<String>> selectedFilters;
   final Function(
     Map<String, List<String>> selectedFilters,
     Map<String, ExtensionFilter> filters,
   ) onSelectFilter;
+  final ExtensionHelper? extensionHelper;
 
   @override
   State<_ExtensionFilterWidget> createState() => _ExtensionFilterWidgetState();
 }
 
 class _ExtensionFilterWidgetState extends State<_ExtensionFilterWidget> {
-  late final ExtensionService _runtime = widget.runtime;
   late Map<String, ExtensionFilter> _filters = widget.filters;
+
   // 初始化一开始选择的选项
   late Map<String, List<String>> _selectedFilters = widget.selectedFilters;
 
@@ -415,9 +422,11 @@ class _ExtensionFilterWidgetState extends State<_ExtensionFilterWidget> {
       }
       selectedFilters[key]!.add(value);
     }
+    var f = await widget.extensionHelper?.createFilter(filter: selectedFilters);
+    if (f == null) return;
     // 再请求一次 _filters
     final filters = Map<String, ExtensionFilter>.from(
-      await _runtime.createFilter(filter: selectedFilters),
+      f,
     );
 
     // 剔除 _filters 中不能存在的选项

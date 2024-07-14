@@ -16,7 +16,7 @@ class ComicController extends ReaderController<ExtensionMangaWatch> {
     required super.detailUrl,
     required super.playIndex,
     required super.episodeGroupId,
-    required super.runtime,
+    required super.extension,
     required super.cover,
     required super.anilistID,
   });
@@ -75,7 +75,7 @@ class ComicController extends ReaderController<ExtensionMangaWatch> {
       isRecover.value = true;
       // 获取上次阅读的页码
       final history = await DatabaseService.getHistoryByPackageAndUrl(
-        super.runtime.extension.package,
+        super.extension.package,
         super.detailUrl,
       );
 

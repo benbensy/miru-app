@@ -12,7 +12,7 @@ class NovelController extends ReaderController<ExtensionFikushonWatch> {
     required super.detailUrl,
     required super.playIndex,
     required super.episodeGroupId,
-    required super.runtime,
+    required super.extension,
     required super.cover,
     required super.anilistID,
   });
@@ -50,7 +50,7 @@ class NovelController extends ReaderController<ExtensionFikushonWatch> {
       isRecover.value = true;
       // 获取上次阅读的页码
       final history = await DatabaseService.getHistoryByPackageAndUrl(
-        super.runtime.extension.package,
+        super.extension.package,
         super.detailUrl,
       );
       if (history == null ||

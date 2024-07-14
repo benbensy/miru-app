@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:miru_app/data/services/extension_service.dart';
+import 'package:miru_app/data/services/cookie_utils.dart';
+import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/utils/miru_storage.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class WebViewPage extends StatefulWidget {
   const WebViewPage({
     super.key,
-    required this.extensionRuntime,
+    this.extension,
     required this.url,
   });
-  final ExtensionService extensionRuntime;
+
+  final Extension? extension;
   final String url;
 
   @override
@@ -18,9 +20,9 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
-  late String url = widget.extensionRuntime.extension.webSite + widget.url;
-  final cookieManager = WebviewCookieManager();
+  String url = "";
   late Uri loadUrl = Uri.parse(url);
+  final cookieManager = WebviewCookieManager();
 
   _setCookie() async {
     if (loadUrl.host != Uri.parse(url).host) {
@@ -30,9 +32,22 @@ class _WebViewPageState extends State<WebViewPage> {
     final cookieString =
         cookies.map((e) => '${e.name}=${e.value}').toList().join(';');
     debugPrint('$url $cookieString');
-    widget.extensionRuntime.setCookie(
-      cookieString,
-    );
+    setCookie(widget.extension!,cookieString);
+  }
+
+  @override
+  void initState() {
+    if (widget.extension == null) {
+      url = widget.url;
+    } else {
+      var webSite = widget.extension!.webSite;
+      if (webSite.endsWith("/")) {
+        url = widget.extension!.webSite + widget.url;
+      } else {
+        url = "${widget.extension!.webSite}/${widget.url}";
+      }
+    }
+    super.initState();
   }
 
   @override
@@ -45,7 +60,7 @@ class _WebViewPageState extends State<WebViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(loadUrl.toString()),
+        title: Text(url.toString()),
       ),
       body: InAppWebView(
         initialUrlRequest: URLRequest(

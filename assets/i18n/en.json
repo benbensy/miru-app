@@ -39,7 +39,7 @@
     "retry": "Retry",
     "next": "Next",
     "previous": "Previous",
-    "show-all": "Show all",
+    "show-all": "All",
     "delete": "Delete",
     "delete-all": "Delete all",
     "save": "Save",
@@ -51,7 +51,13 @@
     "export": "Export",
     "off": "Off",
     "error-message": "Error message",
-    "disconnect": "Disconnect"
+    "disconnect": "Disconnect",
+    "update": "Update",
+    "download": "Download",
+    "browse": "Browse",
+    "more": "More",
+    "next-chapter": "Next chapter:",
+    "last-chapter": "Last chapter:"
   },
   "home": {
     "continue-watching": "Continue",
@@ -76,7 +82,8 @@
     },
     "error-dialog": "Error Message",
     "installed": "Installed",
-    "edit-code": "Edit Code"
+    "edit-code": "Edit Code",
+    "extension-manager": "Manager"
   },
   "extension-repo": {
     "error": "An error occurred!",
@@ -86,7 +93,7 @@
   },
   "settings": {
     "general": "General",
-    "general-subtitle": "TMDB, Language, Theme, check for updates...",
+    "general-subtitle": "Language, Theme, check for updates...",
     "extension": "Extensions",
     "extension-subtitle": "Extension repository",
     "video-player": "Video Player",
@@ -94,7 +101,7 @@
     "comic-reader": "Comic Reader",
     "comic-reader-subtitle": "Default reader mode...",
     "tracking": "Tracking",
-    "tracking-subtitle": "AniList...",
+    "tracking-subtitle": "TMDb, AniList...",
     "auto-tracking": "Auto Tracking",
     "auto-tracking-subtitle": "Automatically sync progress when finished watching / reading",
     "about": "About",
@@ -122,7 +129,7 @@
     "nsfw": "NSFW",
     "nsfw-subtitle": "Show NSFW content",
     "external-player": "Preferred video player",
-    "external-player-subtitle": "Currently, the preferred player is {player}",
+    "external-player-subtitle": "Currently, the preferred player is: {player}",
     "external-player-builtin": "Built-in",
     "language-subtitle": "Change the language of the software",
     "extension-log": "Extension Log Window",
@@ -148,7 +155,11 @@
     "save-log-subtitle": "Auto save log file",
     "export-log": "Export Log",
     "export-log-subtitle": "Export log file",
-    "advanced": "Advanced"
+    "advanced": "Advanced",
+    "pure-black-mode": "Pure black mode",
+    "pure-black-mode-subtitle": "Pure dark theme",
+    "update": "Update",
+    "download-manager": "Download manager..."
   },
   "external-player-launching": "Launching {player}",
   "detail": {

@@ -40,9 +40,9 @@ class _ExtensionCardState extends State<ExtensionCard> {
   @override
   void initState() {
     setState(() {
-      isInstall = ExtensionUtils.runtimes.containsKey(widget.package);
+      isInstall = ExtensionUtils.extensions.containsKey(widget.package);
       hasUpgrade = isInstall &&
-          ExtensionUtils.runtimes[widget.package]!.extension.version !=
+          ExtensionUtils.extensions[widget.package]!.version !=
               widget.version;
     });
     super.initState();
@@ -70,7 +70,7 @@ class _ExtensionCardState extends State<ExtensionCard> {
     }
   }
 
-  Widget _buildAndroid(BuildContext context) {
+  Widget _buildMobile(BuildContext context) {
     return ListTile(
       leading: SizedBox(
         width: 35,
@@ -257,7 +257,7 @@ class _ExtensionCardState extends State<ExtensionCard> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroid,
+      mobileBuilder: _buildMobile,
       desktopBuilder: _buildDesktop,
     );
   }

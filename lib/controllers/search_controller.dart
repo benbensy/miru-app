@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
+import 'package:miru_app/data/services/extension_helper.dart';
 import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/utils/extension.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/utils/miru_storage.dart';
 
 class SearchPageController extends GetxController {
@@ -27,16 +27,16 @@ class SearchPageController extends GetxController {
   getRuntime({ExtensionType? type}) {
     _randomKey = DateTime.now().millisecondsSinceEpoch.toString();
     cuurentExtensionType.value = type;
-    final exts = ExtensionUtils.runtimes.values.toList();
+    final exts = ExtensionUtils.extensions.values.toList();
     if (type != null) {
-      exts.removeWhere((element) => element.extension.type != type);
+      exts.removeWhere((element) => element.type != type);
     }
     if (!MiruStorage.getSetting(SettingKey.enableNSFW)) {
-      exts.removeWhere((element) => element.extension.nsfw);
+      exts.removeWhere((element) => element.nsfw);
     }
     searchResultList.clear();
     for (var element in exts) {
-      searchResultList.add(SearchResult(runitme: element));
+      searchResultList.add(SearchResult(extension: element));
     }
     getResult(_randomKey);
     needRefresh = false;
@@ -54,9 +54,9 @@ class SearchPageController extends GetxController {
       Future<List<ExtensionListItem>> resultFuture;
 
       if (search.value.isEmpty) {
-        resultFuture = element.runitme.latest(1);
+        resultFuture = ExtensionHelper(element.extension).latest(1);
       } else {
-        resultFuture = element.runitme.search(search.value, 1);
+        resultFuture = ExtensionHelper(element.extension).search(search.value, 1);
       }
 
       futures.add(
@@ -89,7 +89,7 @@ class SearchPageController extends GetxController {
   }
 
   getPackgeByIndex(int index) {
-    return searchResultList[index].runitme.extension.package;
+    return searchResultList[index].extension.package;
   }
 
   callRefresh() {
@@ -102,12 +102,12 @@ class SearchPageController extends GetxController {
 }
 
 class SearchResult {
-  final ExtensionService runitme;
+  final Extension extension;
   List<ExtensionListItem>? result;
   String? error;
   bool completed;
   SearchResult({
-    required this.runitme,
+    required this.extension,
     this.error,
     this.result,
     this.completed = false,

@@ -5,8 +5,6 @@ import 'package:miru_app/views/pages/watch/reader/comic/comic_reader_content.dar
 import 'package:miru_app/views/pages/watch/reader/comic/comic_reader_settings.dart';
 import 'package:miru_app/controllers/watch/comic_controller.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
-// import 'package:miru_app/views/pages/watch/reader/comic/comic_zoom.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/views/widgets/watch/reader_view.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -18,7 +16,7 @@ class ComicReader extends StatefulWidget {
     required this.detailUrl,
     required this.playerIndex,
     required this.episodeGroupId,
-    required this.runtime,
+    required this.extension,
     required this.anilistID,
     this.cover,
   });
@@ -28,7 +26,7 @@ class ComicReader extends StatefulWidget {
   final String detailUrl;
   final int playerIndex;
   final int episodeGroupId;
-  final ExtensionService runtime;
+  final Extension extension;
   final String? cover;
   final String anilistID;
 
@@ -46,7 +44,7 @@ class _ComicReaderState extends State<ComicReader> {
         detailUrl: widget.detailUrl,
         playIndex: widget.playerIndex,
         episodeGroupId: widget.episodeGroupId,
-        runtime: widget.runtime,
+        extension: widget.extension,
         cover: widget.cover,
         anilistID: widget.anilistID,
       ),
@@ -66,7 +64,7 @@ class _ComicReaderState extends State<ComicReader> {
     return ReaderView<ComicController>(
       widget.title,
       content: PlatformWidget(
-          androidWidget: ComicReaderContent(widget.title),
+          mobileWidget: ComicReaderContent(widget.title),
           desktopWidget: DragToMoveArea(
             child: ComicReaderContent(widget.title),
           )),

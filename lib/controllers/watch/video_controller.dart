@@ -16,6 +16,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:miru_app/data/providers/anilist_provider.dart';
 import 'package:miru_app/data/providers/bt_server_provider.dart';
+import 'package:miru_app/data/services/extension_helper.dart';
 import 'package:miru_app/models/index.dart';
 import 'package:miru_app/utils/log.dart';
 import 'package:miru_app/utils/request.dart';
@@ -26,7 +27,6 @@ import 'package:miru_app/controllers/main_controller.dart';
 import 'package:miru_app/router/router.dart';
 import 'package:miru_app/utils/bt_server.dart';
 import 'package:miru_app/data/services/database_service.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/utils/i18n.dart';
 import 'package:miru_app/utils/layout.dart';
 import 'package:miru_app/utils/miru_directory.dart';
@@ -44,7 +44,7 @@ class VideoPlayerController extends GetxController {
   final String detailUrl;
   final int playIndex;
   final int episodeGroupId;
-  final ExtensionService runtime;
+  final Extension extension;
   final String anilistID;
 
   VideoPlayerController({
@@ -53,7 +53,7 @@ class VideoPlayerController extends GetxController {
     required this.detailUrl,
     required this.playIndex,
     required this.episodeGroupId,
-    required this.runtime,
+    required this.extension,
     required this.anilistID,
   });
 
@@ -181,7 +181,7 @@ class VideoPlayerController extends GetxController {
 
   @override
   void onInit() async {
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       // 切换到横屏
       SystemChrome.setPreferredOrientations(
         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
@@ -306,7 +306,7 @@ class VideoPlayerController extends GetxController {
 
       // 获取上次播放进度
       final history = await DatabaseService.getHistoryByPackageAndUrl(
-        runtime.extension.package,
+        extension.package,
         detailUrl,
       );
 
@@ -438,7 +438,7 @@ class VideoPlayerController extends GetxController {
       player.setSubtitleTrack(SubtitleTrack.no());
     } on StartServerException catch (_) {
       // 如果是 启动 bt server 失败
-      if (Platform.isAndroid) {
+      if (Platform.isAndroid || Platform.isIOS) {
         await showDialog(
           context: currentContext,
           builder: (context) => const BTDialog(),
@@ -470,7 +470,7 @@ class VideoPlayerController extends GetxController {
     watchData = null;
     subtitles.clear();
     final playUrl = playList[index.value].url;
-    watchData = await runtime.watch(playUrl) as ExtensionBangumiWatch;
+    watchData = await ExtensionHelper(extension).watch(playUrl) as ExtensionBangumiWatch;
   }
 
   // 获取 torrent 媒体文件
@@ -657,8 +657,8 @@ class VideoPlayerController extends GetxController {
         ..url = detailUrl
         ..cover = file.path
         ..episodeGroupId = episodeGroupId
-        ..package = runtime.extension.package
-        ..type = runtime.extension.type
+        ..package = extension.package
+        ..type = extension.type
         ..episodeId = index.value
         ..episodeTitle = epName
         ..title = title
@@ -812,7 +812,7 @@ class VideoPlayerController extends GetxController {
         mediaId: anilistID,
       );
     }
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       SystemChrome.setEnabledSystemUIMode(
         SystemUiMode.edgeToEdge,
       );

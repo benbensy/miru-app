@@ -30,6 +30,7 @@ class DetailPage extends StatefulWidget {
     required this.package,
     this.tag,
   });
+
   final String url;
   final String package;
   final String? tag;
@@ -62,7 +63,7 @@ class _DetailPageState extends State<DetailPage> {
     super.dispose();
   }
 
-  Widget _buildAndroidDetail(BuildContext context) {
+  Widget _buildMobileDetail(BuildContext context) {
     return Scaffold(
       body: Obx(() {
         late String episodesString;
@@ -116,7 +117,7 @@ class _DetailPageState extends State<DetailPage> {
                       onPressed: () {
                         Get.to(
                           WebViewPage(
-                            extensionRuntime: c.runtime.value!,
+                            extension: c.extension,
                             url: c.url,
                           ),
                         );
@@ -143,83 +144,74 @@ class _DetailPageState extends State<DetailPage> {
                       },
                     )
                   ],
-                  expandedHeight: 400,
+                  expandedHeight: 420,
                 ),
               ];
             },
-            body: Padding(
-              padding: const EdgeInsets.all(8),
-              child: SafeArea(
-                top: false,
-                child: TabBarView(
-                  children: [
-                    if (!LayoutUtils.isTablet)
-                      DetailEpisodes(
-                        tag: widget.tag,
-                      ),
-                    DetailOverView(
-                      tag: widget.tag,
-                    ),
-                    if (c.type == ExtensionType.bangumi)
-                      Obx(() {
-                        if (c.tmdbDetail == null ||
-                            c.tmdbDetail!.casts.isEmpty) {
-                          return Column(
-                            children: [
-                              const SizedBox(height: 100),
-                              Text('detail.no-tmdb-data'.i18n),
-                              const SizedBox(height: 8),
-                              FilledButton(
-                                onPressed: () {
-                                  c.modifyTMDBBinding();
-                                },
-                                child: Text(
-                                  'detail.modify-tmdb-binding'.i18n,
-                                ),
-                              )
-                            ],
-                          );
+            body: TabBarView(
+              children: [
+                if (!LayoutUtils.isTablet)
+                  DetailEpisodes(
+                    tag: widget.tag,
+                  ),
+                DetailOverView(
+                  tag: widget.tag,
+                ),
+                if (c.type == ExtensionType.bangumi)
+                  Obx(() {
+                    if (c.tmdbDetail == null || c.tmdbDetail!.casts.isEmpty) {
+                      return Column(
+                        children: [
+                          const SizedBox(height: 100),
+                          Text('detail.no-tmdb-data'.i18n),
+                          const SizedBox(height: 8),
+                          FilledButton(
+                            onPressed: () {
+                              c.modifyTMDBBinding();
+                            },
+                            child: Text(
+                              'detail.modify-tmdb-binding'.i18n,
+                            ),
+                          )
+                        ],
+                      );
+                    }
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(0),
+                      itemBuilder: (context, index) {
+                        final cast = c.tmdbDetail!.casts[index];
+                        late String url = '';
+                        if (cast.profilePath != null) {
+                          url = TmdbApi.getImageUrl(cast.profilePath!) ?? '';
                         }
-                        return ListView.builder(
-                          padding: const EdgeInsets.all(0),
-                          itemBuilder: (context, index) {
-                            final cast = c.tmdbDetail!.casts[index];
-                            late String url = '';
-                            if (cast.profilePath != null) {
-                              url =
-                                  TmdbApi.getImageUrl(cast.profilePath!) ?? '';
-                            }
-
-                            return ListTile(
-                              leading: Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: CacheNetWorkImagePic(
-                                  url,
-                                  width: 50,
-                                  height: 50,
-                                  headers: c.detail?.headers,
-                                ),
+                        return ListTile(
+                          leading: Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: CacheNetWorkImagePic(
+                              url,
+                              width: 50,
+                              height: 50,
+                              headers: c.detail?.headers,
+                            ),
+                          ),
+                          title: Text(cast.name),
+                          subtitle: Text(cast.character),
+                          onTap: () {
+                            launchUrl(
+                              Uri.parse(
+                                "https://www.themoviedb.org/person/${cast.id}",
                               ),
-                              title: Text(cast.name),
-                              subtitle: Text(cast.character),
-                              onTap: () {
-                                launchUrl(
-                                  Uri.parse(
-                                    "https://www.themoviedb.org/person/${cast.id}",
-                                  ),
-                                );
-                              },
                             );
                           },
-                          itemCount: c.tmdbDetail!.casts.length,
                         );
-                      }),
-                  ],
-                ),
-              ),
+                      },
+                      itemCount: c.tmdbDetail!.casts.length,
+                    );
+                  }),
+              ],
             ),
           ),
         );
@@ -560,7 +552,7 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: _buildAndroidDetail,
+      mobileBuilder: _buildMobileDetail,
       desktopBuilder: _buildDesktopDetail,
     );
   }

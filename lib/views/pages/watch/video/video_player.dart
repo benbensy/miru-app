@@ -5,14 +5,13 @@ import 'package:miru_app/models/extension.dart';
 import 'package:miru_app/controllers/watch/video_controller.dart';
 import 'package:miru_app/views/pages/watch/video/video_player_sidebar.dart';
 import 'package:miru_app/views/pages/watch/video/video_player_content.dart';
-import 'package:miru_app/data/services/extension_service.dart';
 import 'package:miru_app/views/widgets/platform_widget.dart';
 
 class VideoPlayer extends StatefulWidget {
   const VideoPlayer({
     super.key,
     required this.playList,
-    required this.runtime,
+    required this.extension,
     required this.episodeGroupId,
     required this.playerIndex,
     required this.title,
@@ -25,7 +24,7 @@ class VideoPlayer extends StatefulWidget {
   final String detailUrl;
   final int playerIndex;
   final int episodeGroupId;
-  final ExtensionService runtime;
+  final Extension extension;
   final String anilistID;
 
   @override
@@ -44,7 +43,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
         detailUrl: widget.detailUrl,
         playIndex: widget.playerIndex,
         episodeGroupId: widget.episodeGroupId,
-        runtime: widget.runtime,
+        extension: widget.extension,
         anilistID: widget.anilistID,
       ),
       tag: widget.title,
@@ -117,7 +116,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuildWidget(
-      androidBuilder: (context) => Theme(
+      mobileBuilder: (context) => Theme(
         data: ThemeData.dark(useMaterial3: true),
         child: Scaffold(body: _buildContent()),
       ),
