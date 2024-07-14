@@ -4,20 +4,20 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
 class MiruDirectory {
-  static late final Directory _appDocDir;
+  static late final Directory _appDataDir;
   static late final Directory _cacheDir;
 
   static ensureInitialized() async {
     if (Platform.isLinux) {
-      _appDocDir = Directory.fromUri(
+      _appDataDir = Directory.fromUri(
           Uri.parse("${Platform.environment['HOME']}/.config"));
     } else {
-      _appDocDir = await getApplicationDocumentsDirectory();
+      _appDataDir = await getApplicationSupportDirectory();
     }
     _cacheDir = await getTemporaryDirectory();
   }
 
-  static String get getDirectory => _miruDir(_appDocDir);
+  static String get getDirectory => _miruDir(_appDataDir);
 
   static String get getCacheDirectory => _miruDir(_cacheDir);
 
