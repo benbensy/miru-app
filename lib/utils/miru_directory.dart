@@ -9,8 +9,7 @@ class MiruDirectory {
 
   static ensureInitialized() async {
     if (Platform.isLinux) {
-      _appDocDir = Directory.fromUri(
-          Uri.parse("${Platform.environment['HOME']}/.config"));
+      _appDocDir = await getApplicationSupportDirectory();
     } else {
       _appDocDir = await getApplicationDocumentsDirectory();
     }
