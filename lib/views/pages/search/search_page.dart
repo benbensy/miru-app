@@ -167,7 +167,7 @@ class _SearchPageState extends State<SearchPage> {
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
-                  height: 30,
+                  height: 38,
                   child: Row(
                     children: [
                       Expanded(

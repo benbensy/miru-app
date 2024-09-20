@@ -145,12 +145,13 @@ class _GridItemTileState extends State<GridItemTile> {
           const SizedBox(height: 8),
           // 文字只显示一行
           SizedBox(
-            height: 20,
             child: Text(
               widget.title,
               overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14),
             ),
           ),
+          const SizedBox(height: 4),
           if (widget.subtitle != null)
             Text(
               widget.subtitle.toString(),
